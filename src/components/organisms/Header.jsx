@@ -52,6 +52,24 @@ const navigate = useNavigate();
             Notifications
           </Button>
           
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={async () => {
+              try {
+                const { ApperUI } = window.ApperSDK;
+                await ApperUI.logout();
+                navigate('/login');
+              } catch (error) {
+                console.error("Logout failed:", error);
+              }
+            }}
+            className="flex items-center"
+          >
+            <ApperIcon name="LogOut" className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Logout</span>
+          </Button>
+          
           <div className="w-8 h-8 bg-gradient-to-r from-gold-400 to-gold-600 rounded-full flex items-center justify-center">
             <ApperIcon name="User" className="w-4 h-4 text-white" />
           </div>

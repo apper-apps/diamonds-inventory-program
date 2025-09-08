@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Button from "@/components/atoms/Button";
-import FormField from "@/components/molecules/FormField";
-import ApperIcon from "@/components/ApperIcon";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { categoryService } from "@/services/api/categoryService";
+import ApperIcon from "@/components/ApperIcon";
+import FormField from "@/components/molecules/FormField";
+import Button from "@/components/atoms/Button";
 
 const AddProductModal = ({ isOpen, onClose, onSubmit, editProduct = null }) => {
 const [formData, setFormData] = useState({
@@ -36,7 +36,7 @@ price: "0",
 name: editProduct.name || "",
           category: editProduct.category || "",
           goldType: editProduct.goldType || "",
-diamondType: editProduct.diamondType || "",
+          diamondType: editProduct.diamondType || "",
           diamondQuality: editProduct.diamondQuality || "",
           diamondColor: editProduct.diamondColor || "",
           certificateNumber: editProduct.certificateNumber || "",
@@ -44,7 +44,7 @@ diamondType: editProduct.diamondType || "",
           diamondWeight: editProduct.diamondWeight?.toString() || "",
           dimensions: editProduct.dimensions || "",
           specifications: editProduct.specifications || "",
-price: editProduct.price?.toString() || "0",
+          price: editProduct.price?.toString() || "0",
           description: editProduct.description || "",
           status: editProduct.status || "Available",
           barcode: editProduct.barcode || "",
@@ -62,9 +62,8 @@ setFormData({
           weight: "",
           diamondWeight: "",
           dimensions: "",
-specifications: "",
+          specifications: "",
           price: "0",
-          price: "",
           description: "",
           status: "Available",
           barcode: "",
@@ -128,9 +127,9 @@ if (formData.certificateNumber && !/^[A-Za-z0-9-]+$/.test(formData.certificateNu
     try {
 const productData = {
         ...formData,
-weight: parseFloat(formData.weight) || 0,
+        weight: parseFloat(formData.weight) || 0,
+        diamondWeight: parseFloat(formData.diamondWeight) || 0,
         price: parseFloat(formData.price) || 0,
-        price: parseFloat(formData.price),
         barcode: formData.barcode || generateBarcode()
       };
 
@@ -191,7 +190,7 @@ weight: parseFloat(formData.weight) || 0,
               required
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 label="Gold Type"
                 name="goldType"
@@ -199,7 +198,7 @@ weight: parseFloat(formData.weight) || 0,
                 value={formData.goldType}
                 onChange={handleChange}
                 options={[
-{ value: "14k", label: "14k Gold" },
+                  { value: "14k", label: "14k Gold" },
                   { value: "18k", label: "18k Gold" },
                   { value: "22k", label: "22k Gold" },
                   { value: "24k", label: "24k Gold" },
@@ -210,7 +209,7 @@ weight: parseFloat(formData.weight) || 0,
               />
 
               <FormField
-label="Diamond Type"
+                label="Diamond Type"
                 name="diamondType"
                 type="select"
                 value={formData.diamondType}
@@ -220,7 +219,10 @@ label="Diamond Type"
                   { value: "round-brilliant", label: "Round Brilliant" },
                   { value: "marquise", label: "Marquise" },
                   { value: "princess", label: "Princess" },
-                  { value: "baguette", label: "Baguette" }
+                  { value: "baguette", label: "Baguette" },
+                  { value: "pear-cut", label: "Pear Cut" },
+                  { value: "oval-cut", label: "Oval Cut" },
+                  { value: "emerald-cut", label: "Emerald Cut" }
                 ]}
                 error={errors.diamondType}
               />
@@ -253,7 +255,7 @@ label="Diamond Type"
                 onChange={handleChange}
                 error={errors.diamondColor}
                 type="select"
-                options={[
+options={[
                   { value: "", label: "Select Diamond Color" },
                   { value: "F-G", label: "F-G Grade" },
                   { value: "G-H", label: "G-H Grade" },
@@ -353,43 +355,16 @@ label="Diamond Type"
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 <FormField
-                label="Weight (grams)"
-                name="weight"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.weight}
-                onChange={handleChange}
-                placeholder="0.00"
-                error={errors.weight}
-                required
-              />
+              label="Dimensions"
+              name="dimensions"
+              value={formData.dimensions}
+              onChange={handleChange}
+              placeholder="e.g., 15mm x 10mm"
+              error={errors.dimensions}
+            />
 
-              <FormField
-                label="Diamond Weight (carats)"
-                name="diamondWeight"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.diamondWeight}
-                onChange={handleChange}
-                placeholder="0.00"
-                error={errors.diamondWeight}
-              />
-
-              <FormField
-                label="Dimensions"
-                name="dimensions"
-                value={formData.dimensions}
-                onChange={handleChange}
-                placeholder="e.g., 15mm x 10mm"
-                error={errors.dimensions}
-              />
-            </div>
-
-            <FormField
+<FormField
               label="Specifications"
               name="specifications"
               type="textarea"
@@ -397,7 +372,7 @@ label="Diamond Type"
               onChange={handleChange}
               placeholder="Additional specifications (clarity, color grade, etc.)"
               rows={3}
-/>
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 <FormField

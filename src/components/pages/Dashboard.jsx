@@ -56,7 +56,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Products"
-          value={stats?.totalProducts?.toLocaleString() || "0"}
+value={stats?.totalProducts?.toLocaleString() || "0"}
           icon="Package"
           subtitle="Items in inventory"
           gradient="from-blue-500 to-blue-600"
@@ -64,7 +64,7 @@ const Dashboard = () => {
         />
         <StatCard
           title="Total Value"
-value={`₹${(stats?.totalValue || 0).toLocaleString('en-IN')}`}
+          value={`₹${(stats?.totalValue || 0).toLocaleString('en-IN')}`}
           icon="DollarSign"
           subtitle="Inventory worth"
           gradient="from-green-500 to-green-600"

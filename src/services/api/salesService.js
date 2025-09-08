@@ -1,44 +1,16 @@
 import { customerService } from './customerService';
 import { productService } from './productService';
 
-// Simulate localStorage for persistent sales data
-const SALES_KEY = 'sales_data';
-const INVOICE_COUNTER_KEY = 'invoice_counter';
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-function getStoredSales() {
-  try {
-    const stored = localStorage.getItem(SALES_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch (error) {
-    console.warn('Error loading sales from localStorage:', error);
-    return [];
-  }
-}
-
-function setStoredSales(sales) {
-  try {
-    localStorage.setItem(SALES_KEY, JSON.stringify(sales));
-  } catch (error) {
-    console.warn('Error saving sales to localStorage:', error);
-  }
-}
-
-function getNextInvoiceNumber() {
-  try {
-    const stored = localStorage.getItem(INVOICE_COUNTER_KEY);
-    const counter = stored ? parseInt(stored) : 1000;
-    const nextNumber = counter + 1;
-    localStorage.setItem(INVOICE_COUNTER_KEY, nextNumber.toString());
-    return `INV-${new Date().getFullYear()}-${nextNumber.toString().padStart(4, '0')}`;
-  } catch (error) {
-    console.warn('Error generating invoice number:', error);
-    return `INV-${new Date().getFullYear()}-${Date.now()}`;
-  }
-}
-
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+// Initialize ApperClient
+const getApperClient = () => {
+  const { ApperClient } = window.ApperSDK;
+  return new ApperClient({
+    apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+    apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+  });
+};
 
 // Company details for invoicing
 const COMPANY_DETAILS = {
@@ -55,170 +27,357 @@ const COMPANY_DETAILS = {
 
 export const salesService = {
   async createSale(saleData) {
-    await delay(500);
-    
     try {
+      await delay(500);
+      const apperClient = getApperClient();
+      
       // Get customer details
       const customer = await customerService.getById(saleData.customerId);
       
       // Generate invoice number
-      const invoiceNumber = getNextInvoiceNumber();
+      const invoiceNumber = `INV-${new Date().getFullYear()}-${Date.now().toString().padStart(4, '0')}`;
       const saleDate = new Date().toISOString();
       
-      // Create sale record
-      const sale = {
-        Id: Date.now(),
-        invoiceNumber,
-        customerId: saleData.customerId,
-        customer: customer,
-        items: saleData.items,
-        subtotal: saleData.subtotal,
-        gstAmount: saleData.gstAmount,
-        totalAmount: saleData.totalAmount,
-        saleDate,
-        status: 'completed',
-        paymentMethod: 'cash', // Default for now
-        createdAt: saleDate,
-        updatedAt: saleDate
+      const params = {
+        records: [
+          {
+            Name: `Sale-${invoiceNumber}`,
+            invoice_number_c: invoiceNumber,
+            customer_id_c: parseInt(saleData.customerId),
+            items_c: JSON.stringify(saleData.items),
+            subtotal_c: parseFloat(saleData.subtotal) || 0,
+            gst_amount_c: parseFloat(saleData.gstAmount) || 0,
+            total_amount_c: parseFloat(saleData.totalAmount) || 0,
+            sale_date_c: saleDate,
+            status_c: 'completed',
+            payment_method_c: 'cash',
+            created_at_c: saleDate,
+            updated_at_c: saleDate
+          }
+        ]
       };
       
-      // Save sale
-      const sales = getStoredSales();
-      sales.push(sale);
-      setStoredSales(sales);
+      const response = await apperClient.createRecord('sale_c', params);
       
-      // Create invoice data
-      const invoiceData = {
-        ...sale,
-        company: COMPANY_DETAILS,
-invoiceDate: new Date(saleDate).toLocaleDateString('en-IN', {
-          timeZone: 'Asia/Kolkata'
-        }),
-        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', {
-          timeZone: 'Asia/Kolkata'
-        }),
-        gstRate: 3.0,
-        // Add product details to items
-        itemsWithDetails: await Promise.all(
-          saleData.items.map(async (item) => {
-            const product = await productService.getById(item.productId);
-            return {
-              ...item,
-              name: product.name,
-              description: product.description,
-              barcode: product.barcode,
-              category: product.category
-            };
-          })
-        )
-      };
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
       
-      return invoiceData;
+      if (response.results) {
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create sale ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          failedRecords.forEach(record => {
+            if (record.message) throw new Error(record.message);
+          });
+        }
+        
+        const successfulRecords = response.results.filter(result => result.success);
+        if (successfulRecords.length > 0) {
+          const saleRecord = successfulRecords[0].data;
+          
+          // Create invoice data
+          const invoiceData = {
+            Id: saleRecord.Id,
+            invoiceNumber: saleRecord.invoice_number_c,
+            customerId: saleRecord.customer_id_c,
+            customer: customer,
+            items: saleData.items,
+            subtotal: saleRecord.subtotal_c,
+            gstAmount: saleRecord.gst_amount_c,
+            totalAmount: saleRecord.total_amount_c,
+            saleDate: saleRecord.sale_date_c,
+            status: saleRecord.status_c,
+            paymentMethod: saleRecord.payment_method_c,
+            company: COMPANY_DETAILS,
+            invoiceDate: new Date(saleRecord.sale_date_c).toLocaleDateString('en-IN', {
+              timeZone: 'Asia/Kolkata'
+            }),
+            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', {
+              timeZone: 'Asia/Kolkata'
+            }),
+            gstRate: 3.0,
+            // Add product details to items
+            itemsWithDetails: await Promise.all(
+              saleData.items.map(async (item) => {
+                const product = await productService.getById(item.productId);
+                return {
+                  ...item,
+                  name: product.name,
+                  description: product.description,
+                  barcode: product.barcode,
+                  category: product.category
+                };
+              })
+            )
+          };
+          
+          return invoiceData;
+        }
+      }
+      
+      throw new Error("Failed to create sale");
+      
     } catch (error) {
-      console.error('Error creating sale:', error);
+      console.error('Error creating sale:', error?.response?.data?.message || error.message);
       throw new Error('Failed to create sale');
     }
   },
 
   async getAll() {
-    await delay(300);
-    return [...getStoredSales()];
+    try {
+      await delay(300);
+      const apperClient = getApperClient();
+      
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "invoice_number_c" } },
+          { field: { Name: "customer_id_c" } },
+          { field: { Name: "items_c" } },
+          { field: { Name: "subtotal_c" } },
+          { field: { Name: "gst_amount_c" } },
+          { field: { Name: "total_amount_c" } },
+          { field: { Name: "sale_date_c" } },
+          { field: { Name: "status_c" } },
+          { field: { Name: "payment_method_c" } }
+        ]
+      };
+      
+      const response = await apperClient.fetchRecords('sale_c', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+      
+      return response.data?.map(item => ({
+        Id: item.Id,
+        invoiceNumber: item.invoice_number_c || '',
+        customerId: item.customer_id_c?.Id || item.customer_id_c,
+        items: item.items_c ? JSON.parse(item.items_c) : [],
+        subtotal: item.subtotal_c || 0,
+        gstAmount: item.gst_amount_c || 0,
+        totalAmount: item.total_amount_c || 0,
+        saleDate: item.sale_date_c || '',
+        status: item.status_c || '',
+        paymentMethod: item.payment_method_c || ''
+      })) || [];
+      
+    } catch (error) {
+      console.error("Error fetching sales:", error?.response?.data?.message || error.message);
+      return [];
+    }
   },
 
   async getById(id) {
-    await delay(200);
-    const sales = getStoredSales();
-    const sale = sales.find(s => s.Id === parseInt(id));
-    if (!sale) {
-      throw new Error('Sale not found');
+    try {
+      await delay(200);
+      const apperClient = getApperClient();
+      
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "invoice_number_c" } },
+          { field: { Name: "customer_id_c" } },
+          { field: { Name: "items_c" } },
+          { field: { Name: "subtotal_c" } },
+          { field: { Name: "gst_amount_c" } },
+          { field: { Name: "total_amount_c" } },
+          { field: { Name: "sale_date_c" } },
+          { field: { Name: "status_c" } },
+          { field: { Name: "payment_method_c" } }
+        ]
+      };
+      
+      const response = await apperClient.getRecordById('sale_c', parseInt(id), params);
+      
+      if (!response.success) {
+        throw new Error(response.message || "Sale not found");
+      }
+      
+      const item = response.data;
+      return {
+        Id: item.Id,
+        invoiceNumber: item.invoice_number_c || '',
+        customerId: item.customer_id_c?.Id || item.customer_id_c,
+        items: item.items_c ? JSON.parse(item.items_c) : [],
+        subtotal: item.subtotal_c || 0,
+        gstAmount: item.gst_amount_c || 0,
+        totalAmount: item.total_amount_c || 0,
+        saleDate: item.sale_date_c || '',
+        status: item.status_c || '',
+        paymentMethod: item.payment_method_c || ''
+      };
+      
+    } catch (error) {
+      console.error("Error fetching sale:", error?.response?.data?.message || error.message);
+      throw error;
     }
-    return { ...sale };
   },
 
   async getByInvoiceNumber(invoiceNumber) {
-    await delay(200);
-    const sales = getStoredSales();
-    const sale = sales.find(s => s.invoiceNumber === invoiceNumber);
-    return sale ? { ...sale } : null;
+    try {
+      await delay(200);
+      const apperClient = getApperClient();
+      
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "invoice_number_c" } },
+          { field: { Name: "customer_id_c" } }
+        ],
+        where: [
+          {
+            FieldName: "invoice_number_c",
+            Operator: "EqualTo",
+            Values: [invoiceNumber]
+          }
+        ]
+      };
+      
+      const response = await apperClient.fetchRecords('sale_c', params);
+      
+      if (!response.success || !response.data || response.data.length === 0) {
+        return null;
+      }
+      
+      const item = response.data[0];
+      return {
+        Id: item.Id,
+        invoiceNumber: item.invoice_number_c || '',
+        customerId: item.customer_id_c?.Id || item.customer_id_c
+      };
+      
+    } catch (error) {
+      console.error("Error fetching sale by invoice:", error?.response?.data?.message || error.message);
+      return null;
+    }
   },
 
   async getSalesByCustomer(customerId) {
-    await delay(300);
-    const sales = getStoredSales();
-    return sales.filter(sale => sale.customerId === parseInt(customerId));
-  },
-
-  async getSalesByDateRange(startDate, endDate) {
-    await delay(300);
-    const sales = getStoredSales();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    
-    return sales.filter(sale => {
-      const saleDate = new Date(sale.saleDate);
-      return saleDate >= start && saleDate <= end;
-    });
-  },
-
-  async getTodaysSales() {
-    await delay(200);
-    const today = new Date();
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-    
-    return this.getSalesByDateRange(startOfDay, endOfDay);
+    try {
+      await delay(300);
+      const apperClient = getApperClient();
+      
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "total_amount_c" } },
+          { field: { Name: "sale_date_c" } }
+        ],
+        where: [
+          {
+            FieldName: "customer_id_c",
+            Operator: "EqualTo",
+            Values: [parseInt(customerId)]
+          }
+        ]
+      };
+      
+      const response = await apperClient.fetchRecords('sale_c', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+      
+      return response.data?.map(item => ({
+        Id: item.Id,
+        totalAmount: item.total_amount_c || 0,
+        saleDate: item.sale_date_c || ''
+      })) || [];
+      
+    } catch (error) {
+      console.error("Error fetching customer sales:", error?.response?.data?.message || error.message);
+      return [];
+    }
   },
 
   async getSalesStats() {
-    await delay(400);
-    const sales = getStoredSales();
-const today = new Date();
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    
-    // Today's sales
-    const todaySales = sales.filter(sale => {
-      const saleDate = new Date(sale.saleDate);
-      const saleDateStart = new Date(saleDate.getFullYear(), saleDate.getMonth(), saleDate.getDate());
-      return saleDateStart.getTime() === todayStart.getTime();
-    });
-    const todayTotal = todaySales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
-    
-    // This week's sales
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay());
-    weekStart.setHours(0, 0, 0, 0);
-    
-    const weekSales = sales.filter(sale => {
-      const saleDate = new Date(sale.saleDate);
-      return saleDate >= weekStart;
-    });
-    const weekTotal = weekSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
-    
-    // This month's sales
-    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-    const monthSales = sales.filter(sale => {
-      const saleDate = new Date(sale.saleDate);
-      return saleDate >= monthStart;
-    });
-    const monthTotal = monthSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
-    
-    return {
-      today: {
-        count: todaySales.length,
-        total: todayTotal
-      },
-      week: {
-        count: weekSales.length,
-        total: weekTotal
-      },
-      month: {
-        count: monthSales.length,
-        total: monthTotal
-      },
-      total: {
-        count: sales.length,
-        total: sales.reduce((sum, sale) => sum + sale.totalAmount, 0)
+    try {
+      await delay(400);
+      const apperClient = getApperClient();
+      
+      const params = {
+        fields: [
+          { field: { Name: "total_amount_c" } },
+          { field: { Name: "sale_date_c" } }
+        ]
+      };
+      
+      const response = await apperClient.fetchRecords('sale_c', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return {
+          today: { count: 0, total: 0 },
+          week: { count: 0, total: 0 },
+          month: { count: 0, total: 0 },
+          total: { count: 0, total: 0 }
+        };
       }
-    };
+      
+      const sales = response.data || [];
+      const today = new Date();
+      const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      
+      // Today's sales
+      const todaySales = sales.filter(sale => {
+        const saleDate = new Date(sale.sale_date_c);
+        const saleDateStart = new Date(saleDate.getFullYear(), saleDate.getMonth(), saleDate.getDate());
+        return saleDateStart.getTime() === todayStart.getTime();
+      });
+      const todayTotal = todaySales.reduce((sum, sale) => sum + (sale.total_amount_c || 0), 0);
+      
+      // This week's sales
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() - today.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      
+      const weekSales = sales.filter(sale => {
+        const saleDate = new Date(sale.sale_date_c);
+        return saleDate >= weekStart;
+      });
+      const weekTotal = weekSales.reduce((sum, sale) => sum + (sale.total_amount_c || 0), 0);
+      
+      // This month's sales
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      const monthSales = sales.filter(sale => {
+        const saleDate = new Date(sale.sale_date_c);
+        return saleDate >= monthStart;
+      });
+      const monthTotal = monthSales.reduce((sum, sale) => sum + (sale.total_amount_c || 0), 0);
+      
+      return {
+        today: {
+          count: todaySales.length,
+          total: todayTotal
+        },
+        week: {
+          count: weekSales.length,
+          total: weekTotal
+        },
+        month: {
+          count: monthSales.length,
+          total: monthTotal
+        },
+        total: {
+          count: sales.length,
+          total: sales.reduce((sum, sale) => sum + (sale.total_amount_c || 0), 0)
+        }
+      };
+      
+    } catch (error) {
+      console.error("Error fetching sales stats:", error?.response?.data?.message || error.message);
+      return {
+        today: { count: 0, total: 0 },
+        week: { count: 0, total: 0 },
+        month: { count: 0, total: 0 },
+        total: { count: 0, total: 0 }
+      };
+    }
   }
 };
