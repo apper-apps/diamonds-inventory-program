@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import Button from "@/components/atoms/Button";
+import BarcodeScanner from "@/components/organisms/BarcodeScanner";
 import ApperIcon from "@/components/ApperIcon";
-
+import Button from "@/components/atoms/Button";
 const Header = ({ onMenuToggle }) => {
   const location = useLocation();
+  const [scannerOpen, setScannerOpen] = useState(false);
   
+  const handleBarcodeScan = (barcode) => {
+    console.log('Barcode scanned:', barcode);
+    setScannerOpen(false);
+  };
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === "/") return "Dashboard";
@@ -36,7 +41,17 @@ const Header = ({ onMenuToggle }) => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
+<div className="flex items-center space-x-4">
+          <Button 
+            variant="outline"
+            size="sm" 
+            onClick={() => setScannerOpen(true)}
+            className="flex items-center"
+          >
+            <ApperIcon name="Camera" className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Scan</span>
+          </Button>
+          
           <Button variant="outline" size="sm" className="hidden sm:flex">
             <ApperIcon name="Bell" className="w-4 h-4 mr-2" />
             Notifications
@@ -47,6 +62,12 @@ const Header = ({ onMenuToggle }) => {
           </div>
         </div>
       </div>
+      
+      <BarcodeScanner
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+onScan={handleBarcodeScan}
+      />
     </header>
   );
 };

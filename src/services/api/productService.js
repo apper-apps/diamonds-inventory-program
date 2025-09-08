@@ -14,6 +14,11 @@ const setStoredProducts = (products) => {
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const productService = {
+  getByBarcode: async (barcode) => {
+    await delay(300); // Simulate API delay
+    const products = getStoredProducts();
+    return products.find(product => product.barcode === barcode) || null;
+  },
   async getAll() {
     await delay(300);
     return [...getStoredProducts()];
@@ -27,7 +32,7 @@ export const productService = {
       throw new Error("Product not found");
     }
     return { ...product };
-  },
+},
 
   async create(productData) {
     await delay(400);

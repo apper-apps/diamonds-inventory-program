@@ -4,30 +4,45 @@ import Button from "@/components/atoms/Button";
 import SearchBar from "@/components/molecules/SearchBar";
 import ProductList from "@/components/organisms/ProductList";
 import AddProductModal from "@/components/organisms/AddProductModal";
+import BarcodeScanner from "@/components/organisms/BarcodeScanner";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import ApperIcon from "@/components/ApperIcon";
 import { productService } from "@/services/api/productService";
-
 const Products = () => {
-  const [products, setProducts] = useState([]);
+const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
-
   useEffect(() => {
     loadProducts();
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
     filterProducts();
   }, [products, searchTerm]);
 
-  const loadProducts = async () => {
+  const handleBarcodeScan = async (barcode) => {
+    try {
+      const product = await productService.getByBarcode(barcode);
+      if (product) {
+        // Highlight the found product by filtering
+        setSearchTerm(barcode);
+        toast.success(`Product found: ${product.name}`);
+      } else {
+        toast.error('Product not found with this barcode');
+      }
+    } catch (error) {
+      toast.error('Error scanning barcode');
+    }
+  };
+
+const loadProducts = async () => {
     try {
       setLoading(true);
       setError("");
@@ -41,13 +56,13 @@ const Products = () => {
     }
   };
 
-  const filterProducts = () => {
+const filterProducts = () => {
     if (!searchTerm) {
       setFilteredProducts(products);
       return;
     }
 
-const filtered = products.filter(product =>
+    const filtered = products.filter(product =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.barcode.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -115,7 +130,7 @@ const filtered = products.filter(product =>
   }
 
   return (
-    <div className="space-y-6">
+<div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -124,13 +139,23 @@ const filtered = products.filter(product =>
             Manage your jewelry inventory with {products.length} total items
           </p>
         </div>
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          className="w-full sm:w-auto"
-        >
-          <ApperIcon name="Plus" className="w-4 h-4 mr-2" />
-          Add Product
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button
+            onClick={() => setIsScannerOpen(true)}
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
+            <ApperIcon name="Camera" className="w-4 h-4 mr-2" />
+            Scan Barcode
+          </Button>
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full sm:w-auto"
+          >
+            <ApperIcon name="Plus" className="w-4 h-4 mr-2" />
+            Add Product
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -139,7 +164,7 @@ const filtered = products.filter(product =>
           <SearchBar
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by name, category, or SKU..."
+            placeholder="Search by name, category, barcode, or SKU..."
           />
         </div>
         <Button variant="outline" className="w-full sm:w-auto">
@@ -167,6 +192,12 @@ const filtered = products.filter(product =>
           onDelete={handleDeleteProduct}
         />
       )}
+{/* Barcode Scanner */}
+      <BarcodeScanner
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={handleBarcodeScan}
+      />
 
       {/* Add/Edit Product Modal */}
       <AddProductModal
