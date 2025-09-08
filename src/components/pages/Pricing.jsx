@@ -290,92 +290,7 @@ try {
             ))}
           </div>
         </div>
-      </div>
-
-{/* Diamond Rates Card */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <ApperIcon name="Gem" size={20} className="text-purple-600" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Diamond Rates by Specifications</h3>
-                <p className="text-sm text-gray-500">Per carat in INR based on type, quality, and color</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Diamond Types */}
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-3">Diamond Types</h4>
-              <div className="space-y-2">
-                {[
-                  { type: "round-brilliant", label: "Round Brilliant", basePrice: 125000 },
-                  { type: "marquise", label: "Marquise", basePrice: 108000 },
-                  { type: "princess", label: "Princess", basePrice: 110000 },
-                  { type: "baguette", label: "Baguette", basePrice: 95000 }
-                ].map(diamond => (
-                  <div key={diamond.type} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="font-medium text-gray-700">{diamond.label}</span>
-                    <span className="text-sm font-semibold text-gray-900">₹{diamond.basePrice.toLocaleString()}/ct</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Diamond Qualities & Colors */}
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-3">Quality & Color Multipliers</h4>
-              <div className="space-y-4">
-                <div>
-                  <h5 className="text-sm font-medium text-gray-700 mb-2">Quality</h5>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex justify-between p-2 bg-gray-50 rounded">
-                      <span>SI</span><span>1.0x</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-gray-50 rounded">
-                      <span>VS-SI</span><span>1.2x</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-gray-50 rounded">
-                      <span>VS</span><span>1.4x</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-gray-50 rounded">
-                      <span>VS-VVS</span><span>1.6x</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-gray-50 rounded">
-                      <span>VVS</span><span>1.8x</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-gray-50 rounded">
-                      <span>IF</span><span>2.2x</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h5 className="text-sm font-medium text-gray-700 mb-2">Color</h5>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex justify-between p-2 bg-gray-50 rounded">
-                      <span>F-G</span><span>1.0x</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-gray-50 rounded">
-                      <span>G-H</span><span>0.9x</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-gray-50 rounded">
-                      <span>E-F</span><span>1.3x</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+</div>
       {/* Price Recalculation Card */}
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg shadow-sm border border-green-200">
         <div className="p-6">
@@ -412,6 +327,7 @@ try {
         </div>
 </div>
       </div>
+    </div>
 
       {/* Usage Instructions */}
       <div className="bg-gray-50 rounded-lg p-6">
