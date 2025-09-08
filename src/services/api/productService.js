@@ -33,9 +33,10 @@ export const productService = {
     await delay(400);
     const products = getStoredProducts();
     const maxId = Math.max(...products.map(p => p.Id), 0);
-    const newProduct = {
-...productData,
+const newProduct = {
+      ...productData,
       Id: maxId + 1,
+      status: productData.status || "Available",
       createdAt: new Date().toISOString().split('T')[0]
     };
     const updatedProducts = [...products, newProduct];
@@ -50,7 +51,7 @@ export const productService = {
     if (index === -1) {
       throw new Error("Product not found");
     }
-    const updatedProduct = { ...products[index], ...productData };
+const updatedProduct = { ...products[index], ...productData };
     products[index] = updatedProduct;
     setStoredProducts(products);
     return { ...updatedProduct };

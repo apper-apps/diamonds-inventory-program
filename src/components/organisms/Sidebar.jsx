@@ -4,10 +4,11 @@ import NavLink from "@/components/molecules/NavLink";
 import ApperIcon from "@/components/ApperIcon";
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const navigation = [
+const navigation = [
     { name: "Dashboard", to: "/", icon: "LayoutDashboard" },
     { name: "Products", to: "/products", icon: "Package" },
     { name: "Inventory", to: "/inventory", icon: "Archive" },
+    { name: "Pricing", to: "/pricing", icon: "DollarSign" },
     { name: "Sales", to: "/sales", icon: "TrendingUp" },
     { name: "Customers", to: "/customers", icon: "Users" },
     { name: "Reports", to: "/reports", icon: "FileText" },

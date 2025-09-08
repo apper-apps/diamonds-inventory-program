@@ -8,16 +8,20 @@ import Inventory from "@/components/pages/Inventory";
 import Sales from "@/components/pages/Sales";
 import Customers from "@/components/pages/Customers";
 import Reports from "@/components/pages/Reports";
+import Pricing from "@/components/pages/Pricing";
+import Login from "@/components/pages/Login";
 
 function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-gray-50">
-        <Routes>
+<Routes>
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="products" element={<Products />} />
             <Route path="inventory" element={<Inventory />} />
+            <Route path="pricing" element={<Pricing />} />
             <Route path="sales" element={<Sales />} />
             <Route path="customers" element={<Customers />} />
             <Route path="reports" element={<Reports />} />

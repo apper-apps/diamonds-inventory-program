@@ -9,8 +9,14 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editProduct = null }) => {
 const [formData, setFormData] = useState({
     name: "",
     category: "",
+    goldType: "",
+    diamondType: "",
+    weight: "",
+    dimensions: "",
+    specifications: "",
     price: "",
     description: "",
+    status: "Available",
     barcode: ""
   });
   const [categories, setCategories] = useState([]);
@@ -22,19 +28,31 @@ const [formData, setFormData] = useState({
       loadCategories();
       if (editProduct) {
         setFormData({
-          name: editProduct.name || "",
+name: editProduct.name || "",
           category: editProduct.category || "",
+          goldType: editProduct.goldType || "",
+          diamondType: editProduct.diamondType || "",
+          weight: editProduct.weight?.toString() || "",
+          dimensions: editProduct.dimensions || "",
+          specifications: editProduct.specifications || "",
           price: editProduct.price?.toString() || "",
           description: editProduct.description || "",
-barcode: editProduct.barcode || ""
+          status: editProduct.status || "Available",
+          barcode: editProduct.barcode || ""
         });
       } else {
-        setFormData({
+setFormData({
           name: "",
           category: "",
+          goldType: "",
+          diamondType: "",
+          weight: "",
+          dimensions: "",
+          specifications: "",
           price: "",
           description: "",
-barcode: ""
+          status: "Available",
+          barcode: ""
         });
       }
       setErrors({});
@@ -64,15 +82,18 @@ const generateBarcode = () => {
   };
 
   const validateForm = () => {
-    const newErrors = {};
+const newErrors = {};
 
     if (!formData.name.trim()) newErrors.name = "Product name is required";
     if (!formData.category) newErrors.category = "Category is required";
+    if (!formData.goldType) newErrors.goldType = "Gold type is required";
+    if (!formData.weight || parseFloat(formData.weight) <= 0) {
+      newErrors.weight = "Valid weight is required";
+    }
     if (!formData.price || parseFloat(formData.price) <= 0) {
       newErrors.price = "Valid price is required";
     }
     if (!formData.description.trim()) newErrors.description = "Description is required";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -87,6 +108,7 @@ const generateBarcode = () => {
     try {
       const productData = {
 ...formData,
+        weight: parseFloat(formData.weight),
         price: parseFloat(formData.price),
         barcode: formData.barcode || generateBarcode()
       };
@@ -137,7 +159,7 @@ const generateBarcode = () => {
               required
             />
 
-            <FormField
+<FormField
               label="Category"
               name="category"
               type="select"
@@ -148,21 +170,109 @@ const generateBarcode = () => {
               required
             />
 
-            <FormField
-              label="Price"
-              name="price"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.price}
-              onChange={handleChange}
-              placeholder="0.00"
-              error={errors.price}
-              required
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                label="Gold Type"
+                name="goldType"
+                type="select"
+                value={formData.goldType}
+                onChange={handleChange}
+                options={[
+                  { value: "18k", label: "18k Gold" },
+                  { value: "22k", label: "22k Gold" },
+                  { value: "24k", label: "24k Gold" },
+                  { value: "white-gold", label: "White Gold" },
+                  { value: "rose-gold", label: "Rose Gold" }
+                ]}
+                error={errors.goldType}
+                required
+              />
+
+              <FormField
+                label="Diamond Type"
+                name="diamondType"
+                type="select"
+                value={formData.diamondType}
+                onChange={handleChange}
+                options={[
+                  { value: "solitaire", label: "Solitaire" },
+                  { value: "emerald-cut", label: "Emerald Cut" },
+                  { value: "princess-cut", label: "Princess Cut" },
+                  { value: "round-brilliant", label: "Round Brilliant" },
+                  { value: "pear-cut", label: "Pear Cut" },
+                  { value: "oval-cut", label: "Oval Cut" },
+                  { value: "cushion-cut", label: "Cushion Cut" }
+                ]}
+                error={errors.diamondType}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                label="Weight (grams)"
+                name="weight"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.weight}
+                onChange={handleChange}
+                placeholder="0.00"
+                error={errors.weight}
+                required
+              />
+
+              <FormField
+                label="Dimensions"
+                name="dimensions"
+                value={formData.dimensions}
+                onChange={handleChange}
+                placeholder="e.g., 15mm x 10mm"
+                error={errors.dimensions}
+              />
+            </div>
 
             <FormField
-label="Barcode"
+              label="Specifications"
+              name="specifications"
+              type="textarea"
+              value={formData.specifications}
+              onChange={handleChange}
+              placeholder="Additional specifications (clarity, color grade, etc.)"
+              rows={3}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                label="Price (₹)"
+                name="price"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="0.00"
+                error={errors.price}
+                required
+              />
+
+              <FormField
+                label="Status"
+                name="status"
+                type="select"
+                value={formData.status}
+                onChange={handleChange}
+                options={[
+                  { value: "Available", label: "Available" },
+                  { value: "Reserved", label: "Reserved" },
+                  { value: "Sold", label: "Sold" }
+                ]}
+                error={errors.status}
+                required
+              />
+            </div>
+
+            <FormField
+              label="Barcode"
               name="barcode"
               value={formData.barcode}
               onChange={handleChange}
