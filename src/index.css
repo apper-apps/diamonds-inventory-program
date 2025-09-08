@@ -1,0 +1,28 @@
+@import 'react-toastify/dist/ReactToastify.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.Toastify__toast-container {
+  width: 320px;
+}
+
+.Toastify__toast {
+  @apply rounded-lg border border-gray-200 shadow-lg;
+}
+
+.Toastify__toast--success {
+  @apply bg-white text-gray-900 border-green-200;
+}
+
+.Toastify__toast--error {
+  @apply bg-white text-gray-900 border-red-200;
+}
+
+.Toastify__toast--warning {
+  @apply bg-white text-gray-900 border-yellow-200;
+}
+
+.Toastify__progress-bar {
+  @apply bg-gradient-to-r from-gold-400 to-gold-600;
+}

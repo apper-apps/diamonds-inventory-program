@@ -1,0 +1,22 @@
+[
+  {
+    "Id": 1,
+    "name": "Rings",
+    "description": "Engagement rings, wedding bands, and fashion rings"
+  },
+  {
+    "Id": 2,
+    "name": "Earrings",
+    "description": "Studs, drops, hoops, and chandelier earrings"
+  },
+  {
+    "Id": 3,
+    "name": "Necklaces",
+    "description": "Pendants, chains, and statement necklaces"
+  },
+  {
+    "Id": 4,
+    "name": "Bracelets",
+    "description": "Tennis bracelets, bangles, and charm bracelets"
+  }
+]
