@@ -105,11 +105,11 @@ const [editingProduct, setEditingProduct] = useState(null);
         productData.diamondColor || 'F-G'
       );
 
-      const updatedProduct = await productService.update(editingProduct.Id, {
+const updatedProduct = await productService.update(editingProduct.Id, {
         ...productData,
-        weight: parseFloat(productData.weight),
+        weight: parseFloat(productData.weight) || 0,
         diamondWeight: parseFloat(productData.diamondWeight) || 0,
-        price: calculatedPrice
+        price: parseFloat(calculatedPrice) || 0
       });
 
       setProducts(prev => prev.map(p => p.Id === updatedProduct.Id ? updatedProduct : p));

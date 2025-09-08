@@ -36,15 +36,15 @@ const Sales = () => {
   }, []);
 
   const loadData = async () => {
-    try {
+try {
       setLoading(true);
       setError(null);
       const [productsData, customersData] = await Promise.all([
         productService.getAll(),
         customerService.getAll()
       ]);
-      setProducts(productsData);
-      setCustomers(customersData);
+      setProducts(productsData || []);
+      setCustomers(customersData || []);
     } catch (err) {
       setError("Failed to load data");
       console.error("Error loading data:", err);
@@ -54,17 +54,17 @@ const Sales = () => {
   };
 
   // Filter products based on search
-  const filteredProducts = products.filter(product => 
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.barcode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+const filteredProducts = products.filter(product => 
+    product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.barcode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.category?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Filter customers based on search
-  const filteredCustomers = customers.filter(customer =>
-    customer.name.toLowerCase().includes(customerSearchTerm.toLowerCase()) ||
-    customer.email.toLowerCase().includes(customerSearchTerm.toLowerCase()) ||
-    customer.phone.toLowerCase().includes(customerSearchTerm.toLowerCase())
+const filteredCustomers = customers.filter(customer =>
+    customer.name?.toLowerCase().includes(customerSearchTerm.toLowerCase()) ||
+    customer.email?.toLowerCase().includes(customerSearchTerm.toLowerCase()) ||
+    customer.phone?.toLowerCase().includes(customerSearchTerm.toLowerCase())
   );
 
   // Barcode scanner
@@ -119,9 +119,9 @@ const Sales = () => {
 
   // Calculate totals
   const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  const gstRate = 0.03; // 3% GST for jewelry
-  const gstAmount = subtotal * gstRate;
-  const totalAmount = subtotal + gstAmount;
+const gstRate = 0.03; // 3% GST for jewelry
+  const gstAmount = Math.round(subtotal * gstRate * 100) / 100;
+  const totalAmount = Math.round((subtotal + gstAmount) * 100) / 100;
 
   // Customer management
   const handleSelectCustomer = (customer) => {
@@ -171,8 +171,7 @@ const saleData = {
       };
 
       const invoice = await salesService.createSale(saleData);
-      
-      // Update inventory status for sold items
+// Update inventory status for sold items
       await Promise.all(
         cart.map(async (item) => {
           try {

@@ -91,8 +91,12 @@ export const salesService = {
       const invoiceData = {
         ...sale,
         company: COMPANY_DETAILS,
-        invoiceDate: new Date(saleDate).toLocaleDateString('en-IN'),
-        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN'),
+invoiceDate: new Date(saleDate).toLocaleDateString('en-IN', {
+          timeZone: 'Asia/Kolkata'
+        }),
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', {
+          timeZone: 'Asia/Kolkata'
+        }),
         gstRate: 3.0,
         // Add product details to items
         itemsWithDetails: await Promise.all(
@@ -168,22 +172,27 @@ export const salesService = {
   async getSalesStats() {
     await delay(400);
     const sales = getStoredSales();
-    const today = new Date();
+const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     
     // Today's sales
     const todaySales = sales.filter(sale => {
       const saleDate = new Date(sale.saleDate);
-      return saleDate.toDateString() === today.toDateString();
+      const saleDateStart = new Date(saleDate.getFullYear(), saleDate.getMonth(), saleDate.getDate());
+      return saleDateStart.getTime() === todayStart.getTime();
     });
-    const todayTotal = todaySales.reduce((sum, sale) => sum + sale.totalAmount, 0);
+    const todayTotal = todaySales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
     
     // This week's sales
-    const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+    
     const weekSales = sales.filter(sale => {
       const saleDate = new Date(sale.saleDate);
       return saleDate >= weekStart;
     });
-    const weekTotal = weekSales.reduce((sum, sale) => sum + sale.totalAmount, 0);
+    const weekTotal = weekSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
     
     // This month's sales
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -191,7 +200,7 @@ export const salesService = {
       const saleDate = new Date(sale.saleDate);
       return saleDate >= monthStart;
     });
-    const monthTotal = monthSales.reduce((sum, sale) => sum + sale.totalAmount, 0);
+    const monthTotal = monthSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
     
     return {
       today: {

@@ -263,8 +263,8 @@ ${invoiceData.company.name}`;
                       <span>₹{invoiceData.subtotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between py-2">
-                      <span className="font-medium">GST ({invoiceData.gstRate}%):</span>
-                      <span>₹{invoiceData.gstAmount.toLocaleString()}</span>
+<span className="font-medium">GST ({invoiceData.gstRate}%):</span>
+                      <span>₹{invoiceData.gstAmount.toLocaleString('en-IN')}</span>
                     </div>
                     <div className="flex justify-between py-3 border-t-2 border-gray-800 font-bold text-lg">
                       <span>Grand Total:</span>

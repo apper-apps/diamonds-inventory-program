@@ -29,7 +29,7 @@ const formatPrice = (price) => {
             </thead>
             <tbody>
                 {products.map((product, index) => <motion.tr
-                    key={product.Id}
+key={product.Id}
                     initial={{
                         opacity: 0,
                         y: 20
@@ -88,7 +88,7 @@ const formatPrice = (price) => {
                                 className="hover:bg-blue-50 hover:border-blue-300">
                                 <ApperIcon name="Edit2" className="w-4 h-4 mr-1" />Edit
                                                     </Button>
-                            <Button variant="danger" size="sm" onClick={() => onDelete(product.Id)}>
+<Button variant="danger" size="sm" onClick={() => onDelete(product.Id)}>
                                 <ApperIcon name="Trash2" className="w-4 h-4 mr-1" />Delete
                                                     </Button>
                         </div>

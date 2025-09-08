@@ -117,10 +117,10 @@ try {
         
         {canEdit && (
           <Button
-            onClick={recalculateAllPrices}
+onClick={recalculateAllPrices}
             disabled={updating}
             variant="primary"
-            className="shrink-0"
+            className="shrink-0 flex items-center gap-2"
           >
             <ApperIcon name="RefreshCw" size={16} />
             Recalculate All Prices
@@ -291,7 +291,7 @@ try {
           </div>
         </div>
 </div>
-      {/* Price Recalculation Card */}
+{/* Price Recalculation Card */}
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg shadow-sm border border-green-200">
         <div className="p-6">
           <div className="flex items-center justify-between">
@@ -306,28 +306,28 @@ try {
                 </p>
               </div>
             </div>
-            <Button
-              onClick={recalculateAllPrices}
-              disabled={updating}
-              className="bg-green-600 hover:bg-green-700 text-white"
-            >
-              {updating ? (
-                <>
-                  <ApperIcon name="Loader" size={16} className="animate-spin mr-2" />
-                  Updating...
-                </>
-              ) : (
-                <>
-                  <ApperIcon name="Calculator" size={16} className="mr-2" />
-                  Recalculate All Prices
-                </>
-              )}
-            </Button>
+            {canEdit && (
+              <Button
+                onClick={recalculateAllPrices}
+                disabled={updating}
+                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+              >
+                {updating ? (
+                  <>
+                    <ApperIcon name="Loader" size={16} className="animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <ApperIcon name="Calculator" size={16} />
+                    Recalculate All Prices
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
 </div>
-      </div>
-    </div>
 
       {/* Usage Instructions */}
       <div className="bg-gray-50 rounded-lg p-6">

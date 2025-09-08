@@ -18,7 +18,7 @@ goldType: "",
     diamondWeight: "",
     dimensions: "",
     specifications: "",
-    price: "",
+price: "0",
     description: "",
     status: "Available",
     barcode: "",
@@ -44,7 +44,7 @@ diamondType: editProduct.diamondType || "",
           diamondWeight: editProduct.diamondWeight?.toString() || "",
           dimensions: editProduct.dimensions || "",
           specifications: editProduct.specifications || "",
-          price: editProduct.price?.toString() || "",
+price: editProduct.price?.toString() || "0",
           description: editProduct.description || "",
           status: editProduct.status || "Available",
           barcode: editProduct.barcode || "",
@@ -62,7 +62,8 @@ setFormData({
           weight: "",
           diamondWeight: "",
           dimensions: "",
-          specifications: "",
+specifications: "",
+          price: "0",
           price: "",
           description: "",
           status: "Available",
@@ -105,7 +106,8 @@ const newErrors = {};
     if (!formData.weight || parseFloat(formData.weight) <= 0) {
       newErrors.weight = "Valid weight is required";
     }
-    if (!formData.price || parseFloat(formData.price) <= 0) {
+const priceValue = parseFloat(formData.price);
+    if (!formData.price || isNaN(priceValue) || priceValue < 0) {
       newErrors.price = "Valid price is required";
     }
     if (!formData.description.trim()) newErrors.description = "Description is required";
@@ -126,7 +128,8 @@ if (formData.certificateNumber && !/^[A-Za-z0-9-]+$/.test(formData.certificateNu
     try {
 const productData = {
         ...formData,
-        weight: parseFloat(formData.weight),
+weight: parseFloat(formData.weight) || 0,
+        price: parseFloat(formData.price) || 0,
         price: parseFloat(formData.price),
         barcode: formData.barcode || generateBarcode()
       };
@@ -351,7 +354,7 @@ label="Diamond Type"
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
+<FormField
                 label="Weight (grams)"
                 name="weight"
                 type="number"
@@ -365,6 +368,18 @@ label="Diamond Type"
               />
 
               <FormField
+                label="Diamond Weight (carats)"
+                name="diamondWeight"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.diamondWeight}
+                onChange={handleChange}
+                placeholder="0.00"
+                error={errors.diamondWeight}
+              />
+
+              <FormField
                 label="Dimensions"
                 name="dimensions"
                 value={formData.dimensions}
@@ -372,7 +387,7 @@ label="Diamond Type"
                 placeholder="e.g., 15mm x 10mm"
                 error={errors.dimensions}
               />
-</div>
+            </div>
 
             <FormField
               label="Specifications"

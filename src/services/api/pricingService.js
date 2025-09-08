@@ -93,19 +93,19 @@ async recalculateAllPrices() {
     await delay(1000);
     
     // Get all products from localStorage
-    const { productService } = await import('./productService');
+const { productService } = await import('./productService.js');
     const products = await productService.getAll();
     
     let updatedCount = 0;
     const updatedProducts = products.map(product => {
-      if (product.goldType && product.weight) {
+if (product.goldType && product.weight && product.weight > 0) {
         const newPrice = this.calculateProductPrice(
           product.goldType,
           product.diamondType,
           product.weight,
           product.diamondWeight || 0,
           product.diamondQuality || 'SI',
-          product.diamondColor || 'F-G'
+product.diamondColor || 'F-G'
         );
         
         if (newPrice !== product.price) {

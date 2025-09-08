@@ -37,7 +37,7 @@ export const productService = {
   async create(productData) {
     await delay(400);
     const products = getStoredProducts();
-    const maxId = Math.max(...products.map(p => p.Id), 0);
+const maxId = Math.max(...products.map(p => parseInt(p.Id) || 0), 0);
 const newProduct = {
       ...productData,
       Id: maxId + 1,
@@ -52,7 +52,7 @@ const newProduct = {
   async update(id, productData) {
     await delay(350);
     const products = getStoredProducts();
-    const index = products.findIndex(p => p.Id === parseInt(id));
+const index = products.findIndex(p => parseInt(p.Id) === parseInt(id));
     if (index === -1) {
       throw new Error("Product not found");
     }
@@ -64,7 +64,7 @@ const updatedProduct = { ...products[index], ...productData };
 
   async delete(id) {
     await delay(300);
-    const products = getStoredProducts();
+const products = getStoredProducts();
     const index = products.findIndex(p => p.Id === parseInt(id));
     if (index === -1) {
       throw new Error("Product not found");
@@ -74,7 +74,7 @@ const updatedProduct = { ...products[index], ...productData };
     return true;
 },
 async updateInventoryStatus(id, status) {
-    await delay(250);
+await delay(300);
     const products = getStoredProducts();
     const index = products.findIndex(p => p.Id === parseInt(id));
     if (index === -1) {
@@ -98,14 +98,14 @@ async updateInventoryStatus(id, status) {
     
     let updatedCount = 0;
     const updatedProducts = products.map(product => {
-      if (product.goldType && product.weight) {
+if (product.goldType && product.weight && product.weight > 0) {
         const newPrice = pricingService.calculateProductPrice(
           product.goldType,
           product.diamondType,
           product.weight,
           product.diamondWeight || 0,
           product.diamondQuality || 'SI',
-          product.diamondColor || 'F-G'
+product.diamondColor || 'F-G'
         );
         
         if (newPrice !== product.price) {
