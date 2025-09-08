@@ -157,7 +157,7 @@ const Sales = () => {
     try {
       setProcessingPayment(true);
       
-      const saleData = {
+const saleData = {
         customerId: selectedCustomer.Id,
         items: cart.map(item => ({
           productId: item.Id,
@@ -171,11 +171,23 @@ const Sales = () => {
       };
 
       const invoice = await salesService.createSale(saleData);
+      
+      // Update inventory status for sold items
+      await Promise.all(
+        cart.map(async (item) => {
+          try {
+            await productService.updateInventoryStatus(item.Id, 'Sold');
+          } catch (error) {
+            console.warn(`Failed to update inventory for product ${item.Id}:`, error);
+          }
+        })
+      );
+      
       setInvoiceData(invoice);
       setInvoiceModalOpen(true);
       clearCart();
       setSelectedCustomer(null);
-      toast.success('Sale processed successfully!');
+      toast.success('Sale processed successfully! Inventory updated.');
     } catch (error) {
       toast.error('Failed to process sale');
       console.error('Error processing sale:', error);

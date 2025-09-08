@@ -8,9 +8,9 @@ const Header = ({ onMenuToggle }) => {
   const [scannerOpen, setScannerOpen] = useState(false);
   
 const handleBarcodeScan = (barcode) => {
-    console.log('Barcode scanned:', barcode);
     setScannerOpen(false);
-    // Redirect to sales page with barcode
+    // Store barcode for sales page and redirect
+    sessionStorage.setItem('scannedBarcode', barcode);
     window.location.href = '/sales';
   };
   const getPageTitle = () => {

@@ -72,5 +72,23 @@ const updatedProduct = { ...products[index], ...productData };
     products.splice(index, 1);
     setStoredProducts(products);
     return true;
+},
+
+  async updateInventoryStatus(id, status) {
+    await delay(250);
+    const products = getStoredProducts();
+    const index = products.findIndex(p => p.Id === parseInt(id));
+    if (index === -1) {
+      throw new Error("Product not found");
+    }
+    
+    const updatedProduct = { 
+      ...products[index], 
+      status,
+      lastSoldDate: status === 'Sold' ? new Date().toISOString().split('T')[0] : undefined
+    };
+    products[index] = updatedProduct;
+    setStoredProducts(products);
+    return { ...updatedProduct };
   }
 };

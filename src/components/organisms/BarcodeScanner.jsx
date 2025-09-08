@@ -137,19 +137,15 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
         errorMessage = 'Camera does not support the required settings.';
       } else {
         errorMessage = 'Unable to access camera. Please check your device settings and try again.';
-      }
+}
       
       setError(errorMessage);
-setError(errorMessage);
       setScanning(false);
     }
   };
+
   const stopScanning = () => {
-    if (codeReader.current) {
-      codeReader.current.reset();
-    }
-    
-// Enhanced cleanup with proper resource disposal
+    // Enhanced cleanup with proper resource disposal
     try {
       // Stop and dispose of code reader
       if (codeReader.current) {

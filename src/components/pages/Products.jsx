@@ -28,24 +28,45 @@ useEffect(() => {
   }, [products, searchTerm]);
 
 const handleBarcodeScan = async (barcode) => {
+    setIsScannerOpen(false);
     try {
       const product = await productService.getByBarcode(barcode);
       if (product) {
+        // Filter to show the found product
         setSearchTerm(barcode);
-        toast.success(`Product found: ${product.name}`, {
-          onClick: () => window.location.href = '/sales'
-        });
-        // Add "Go to Sales" action
-        setTimeout(() => {
-          toast.info('Click here to go to Sales page', {
+        
+        // Show product details with action buttons
+        const productDetails = `
+          📦 ${product.name}
+          💰 ₹${product.price?.toLocaleString() || 'Price not set'}
+          📊 Status: ${product.status || 'Available'}
+          🏷️ Category: ${product.category || 'Uncategorized'}
+        `;
+        
+        toast.success(
+          <div>
+            <div className="font-semibold mb-2">Product Found!</div>
+            <div className="whitespace-pre-line text-sm">{productDetails}</div>
+            <div className="mt-3 flex gap-2">
+              <button 
+                onClick={() => window.location.href = '/sales'}
+                className="bg-gold-500 text-white px-3 py-1 rounded text-sm hover:bg-gold-600"
+              >
+                Add to Sale
+              </button>
+            </div>
+          </div>, 
+          {
+            duration: 8000,
             onClick: () => window.location.href = '/sales'
-          });
-        }, 2000);
+          }
+        );
       } else {
-        toast.error('Product not found with this barcode');
+        toast.error('Product not found with this barcode. Check the barcode and try again.');
       }
     } catch (error) {
-      toast.error('Error scanning barcode');
+      console.error('Barcode scan error:', error);
+      toast.error('Error scanning barcode. Please try again.');
     }
   };
 
