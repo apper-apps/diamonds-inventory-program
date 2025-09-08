@@ -1,23 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import Button from "@/components/atoms/Button";
-import FormField from "@/components/molecules/FormField";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import ApperIcon from "@/components/ApperIcon";
 import { pricingService } from "@/services/api/pricingService";
 import { authService } from "@/services/api/authService";
-
+import ApperIcon from "@/components/ApperIcon";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
+import FormField from "@/components/molecules/FormField";
+import Button from "@/components/atoms/Button";
 const Pricing = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [updating, setUpdating] = useState(false);
+const [updating, setUpdating] = useState(false);
   const [goldRates, setGoldRates] = useState({});
   const [diamondRates, setDiamondRates] = useState({});
   const [lastUpdated, setLastUpdated] = useState('');
   const [editingGold, setEditingGold] = useState(false);
   const [editingDiamond, setEditingDiamond] = useState(false);
-
   // Load pricing data
   useEffect(() => {
     loadPricingData();
@@ -53,13 +51,15 @@ const Pricing = () => {
     }));
   };
 
-  const updateGoldRates = async () => {
+const updateGoldRates = async () => {
     try {
       setUpdating(true);
       await pricingService.updateGoldRates(goldRates);
       setEditingGold(false);
-      toast.success("Gold rates updated successfully!");
+      toast.success("Gold rates updated successfully! All product prices recalculated.");
       await loadPricingData(); // Refresh data
+      // Trigger product price recalculation
+      await pricingService.recalculateAllPrices();
     } catch (err) {
       toast.error("Failed to update gold rates");
       console.error("Error updating gold rates:", err);
@@ -69,12 +69,14 @@ const Pricing = () => {
   };
 
   const updateDiamondRates = async () => {
-    try {
+try {
       setUpdating(true);
       await pricingService.updateDiamondRates(diamondRates);
       setEditingDiamond(false);
-      toast.success("Diamond rates updated successfully!");
+      toast.success("Diamond rates updated successfully! All product prices recalculated.");
       await loadPricingData(); // Refresh data
+      // Trigger product price recalculation
+      await pricingService.recalculateAllPrices();
     } catch (err) {
       toast.error("Failed to update diamond rates");
       console.error("Error updating diamond rates:", err);
@@ -127,11 +129,15 @@ const Pricing = () => {
       </div>
 
       {/* Last Updated Info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-center gap-2">
           <ApperIcon name="Clock" size={16} className="text-blue-600" />
-          <span className="text-blue-800 font-medium">
-            Last Updated: {new Date(lastUpdated).toLocaleString()}
+          <span className="text-blue-900 font-semibold text-sm">
+            Last Updated: {new Date(lastUpdated).toLocaleString('en-IN', {
+              timeZone: 'Asia/Kolkata',
+              dateStyle: 'medium',
+              timeStyle: 'short'
+            })}
           </span>
         </div>
       </div>
@@ -286,64 +292,125 @@ const Pricing = () => {
         </div>
       </div>
 
-      {/* Price Calculator Card */}
+{/* Diamond Rates Card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <ApperIcon name="Calculator" size={20} className="text-green-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">Price Calculator</h3>
-              <p className="text-sm text-gray-500">Calculate product price based on current rates</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <ApperIcon name="Gem" size={20} className="text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Diamond Rates by Specifications</h3>
+                <p className="text-sm text-gray-500">Per carat in INR based on type, quality, and color</p>
+              </div>
             </div>
           </div>
         </div>
         
         <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            <FormField
-              label="Gold Type"
-              type="select"
-              options={Object.keys(goldRates).map(type => ({
-                value: type,
-                label: type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())
-              }))}
-              placeholder="Select gold type"
-            />
-            
-            <FormField
-              label="Diamond Type"
-              type="select"
-              options={Object.keys(diamondRates).map(type => ({
-                value: type,
-                label: type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())
-              }))}
-              placeholder="Select diamond type"
-            />
-            
-            <FormField
-              label="Weight (grams)"
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="0.00"
-            />
-            
-            <FormField
-              label="Diamond Weight (ct)"
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="0.00"
-            />
-          </div>
-          
-          <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-            <span className="text-lg font-medium text-gray-700">Estimated Price:</span>
-            <span className="text-2xl font-bold text-green-600">₹0</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Diamond Types */}
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-3">Diamond Types</h4>
+              <div className="space-y-2">
+                {[
+                  { type: "round-brilliant", label: "Round Brilliant", basePrice: 125000 },
+                  { type: "marquise", label: "Marquise", basePrice: 108000 },
+                  { type: "princess", label: "Princess", basePrice: 110000 },
+                  { type: "baguette", label: "Baguette", basePrice: 95000 }
+                ].map(diamond => (
+                  <div key={diamond.type} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="font-medium text-gray-700">{diamond.label}</span>
+                    <span className="text-sm font-semibold text-gray-900">₹{diamond.basePrice.toLocaleString()}/ct</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Diamond Qualities & Colors */}
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-3">Quality & Color Multipliers</h4>
+              <div className="space-y-4">
+                <div>
+                  <h5 className="text-sm font-medium text-gray-700 mb-2">Quality</h5>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span>SI</span><span>1.0x</span>
+                    </div>
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span>VS-SI</span><span>1.2x</span>
+                    </div>
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span>VS</span><span>1.4x</span>
+                    </div>
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span>VS-VVS</span><span>1.6x</span>
+                    </div>
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span>VVS</span><span>1.8x</span>
+                    </div>
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span>IF</span><span>2.2x</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h5 className="text-sm font-medium text-gray-700 mb-2">Color</h5>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span>F-G</span><span>1.0x</span>
+                    </div>
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span>G-H</span><span>0.9x</span>
+                    </div>
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span>E-F</span><span>1.3x</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Price Recalculation Card */}
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg shadow-sm border border-green-200">
+        <div className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <ApperIcon name="RefreshCw" size={20} className="text-green-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Automatic Price Updates</h3>
+                <p className="text-sm text-gray-600">
+                  All inventory prices automatically update when you modify rates above
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={recalculateAllPrices}
+              disabled={updating}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              {updating ? (
+                <>
+                  <ApperIcon name="Loader" size={16} className="animate-spin mr-2" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <ApperIcon name="Calculator" size={16} className="mr-2" />
+                  Recalculate All Prices
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+</div>
       </div>
 
       {/* Usage Instructions */}

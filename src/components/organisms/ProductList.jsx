@@ -21,8 +21,8 @@ const formatPrice = (price) => {
                 <tr>
 <th className="text-left py-4 px-6 font-semibold text-gray-700">Product</th>
                     <th className="text-left py-4 px-6 font-semibold text-gray-700">Category</th>
-                    <th className="text-left py-4 px-6 font-semibold text-gray-700">Diamond Quality</th>
                     <th className="text-left py-4 px-6 font-semibold text-gray-700">Barcode</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-700">Diamond Quality</th>
                     <th className="text-left py-4 px-6 font-semibold text-gray-700">Price</th>
                     <th className="text-left py-4 px-6 font-semibold text-gray-700">Actions</th>
                 </tr>
@@ -57,13 +57,13 @@ const formatPrice = (price) => {
                             {product.category}
                         </span>
                     </td>
-                    <td className="py-4 px-6">
+<td className="py-4 px-6">
                         <div
                             className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg px-3 py-2 inline-block">
-                            <span className="font-mono text-lg font-bold text-gray-800">{product.barcode}</span>
+                            <span className="font-mono text-sm font-bold text-gray-800">{product.barcode}</span>
                         </div>
                     </td>
-<td className="py-4 px-6">
+                    <td className="py-4 px-6">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             {product.diamondQuality || 'N/A'}
                         </span>

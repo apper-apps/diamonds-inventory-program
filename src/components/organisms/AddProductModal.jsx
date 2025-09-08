@@ -9,11 +9,13 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editProduct = null }) => {
 const [formData, setFormData] = useState({
     name: "",
     category: "",
-    goldType: "",
+goldType: "",
     diamondType: "",
     diamondQuality: "",
+    diamondColor: "",
     certificateNumber: "",
     weight: "",
+    diamondWeight: "",
     dimensions: "",
     specifications: "",
     price: "",
@@ -34,10 +36,12 @@ const [formData, setFormData] = useState({
 name: editProduct.name || "",
           category: editProduct.category || "",
           goldType: editProduct.goldType || "",
-          diamondType: editProduct.diamondType || "",
+diamondType: editProduct.diamondType || "",
           diamondQuality: editProduct.diamondQuality || "",
+          diamondColor: editProduct.diamondColor || "",
           certificateNumber: editProduct.certificateNumber || "",
           weight: editProduct.weight?.toString() || "",
+          diamondWeight: editProduct.diamondWeight?.toString() || "",
           dimensions: editProduct.dimensions || "",
           specifications: editProduct.specifications || "",
           price: editProduct.price?.toString() || "",
@@ -53,8 +57,10 @@ setFormData({
           goldType: "",
           diamondType: "",
           diamondQuality: "",
+          diamondColor: "",
           certificateNumber: "",
           weight: "",
+          diamondWeight: "",
           dimensions: "",
           specifications: "",
           price: "",
@@ -190,35 +196,33 @@ const productData = {
                 value={formData.goldType}
                 onChange={handleChange}
                 options={[
+{ value: "14k", label: "14k Gold" },
                   { value: "18k", label: "18k Gold" },
                   { value: "22k", label: "22k Gold" },
                   { value: "24k", label: "24k Gold" },
-                  { value: "white-gold", label: "White Gold" },
-                  { value: "rose-gold", label: "Rose Gold" }
+                  { value: "silver", label: "Silver" }
                 ]}
                 error={errors.goldType}
                 required
               />
 
               <FormField
-                label="Diamond Type"
+label="Diamond Type"
                 name="diamondType"
                 type="select"
                 value={formData.diamondType}
                 onChange={handleChange}
                 options={[
-                  { value: "solitaire", label: "Solitaire" },
-                  { value: "emerald-cut", label: "Emerald Cut" },
-                  { value: "princess-cut", label: "Princess Cut" },
+                  { value: "", label: "Select Diamond Type" },
                   { value: "round-brilliant", label: "Round Brilliant" },
-                  { value: "pear-cut", label: "Pear Cut" },
-                  { value: "oval-cut", label: "Oval Cut" },
-                  { value: "cushion-cut", label: "Cushion Cut" }
+                  { value: "marquise", label: "Marquise" },
+                  { value: "princess", label: "Princess" },
+                  { value: "baguette", label: "Baguette" }
                 ]}
                 error={errors.diamondType}
               />
             </div>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <FormField
                 label="Diamond Quality"
                 id="diamondQuality"
@@ -229,21 +233,32 @@ const productData = {
                 type="select"
                 options={[
                   { value: "", label: "Select Diamond Quality" },
-                  { value: "FL", label: "FL - Flawless" },
-                  { value: "IF", label: "IF - Internally Flawless" },
-                  { value: "VVS1", label: "VVS1 - Very Very Slightly Included 1" },
-                  { value: "VVS2", label: "VVS2 - Very Very Slightly Included 2" },
-                  { value: "VS1", label: "VS1 - Very Slightly Included 1" },
-                  { value: "VS2", label: "VS2 - Very Slightly Included 2" },
-                  { value: "SI1", label: "SI1 - Slightly Included 1" },
-                  { value: "SI2", label: "SI2 - Slightly Included 2" },
-                  { value: "I1", label: "I1 - Included 1" },
-                  { value: "I2", label: "I2 - Included 2" },
-                  { value: "I3", label: "I3 - Included 3" }
+                  { value: "SI", label: "SI - Slightly Included" },
+                  { value: "VS-SI", label: "VS-SI - Very Slightly to Slightly Included" },
+                  { value: "VS", label: "VS - Very Slightly Included" },
+                  { value: "VS-VVS", label: "VS-VVS - Very Slightly to Very Very Slightly Included" },
+                  { value: "VVS", label: "VVS - Very Very Slightly Included" },
+                  { value: "IF", label: "IF - Internally Flawless (Solitaire only)" }
                 ]}
               />
 
               <FormField
+                label="Diamond Color"
+                id="diamondColor"
+                name="diamondColor"
+                value={formData.diamondColor}
+                onChange={handleChange}
+                error={errors.diamondColor}
+                type="select"
+                options={[
+                  { value: "", label: "Select Diamond Color" },
+                  { value: "F-G", label: "F-G Grade" },
+                  { value: "G-H", label: "G-H Grade" },
+                  { value: "E-F", label: "E-F Grade" }
+                ]}
+              />
+
+<FormField
                 label="Certificate Number"
                 id="certificateNumber"
                 name="certificateNumber"
@@ -251,6 +266,36 @@ const productData = {
                 onChange={handleChange}
                 error={errors.certificateNumber}
                 placeholder="e.g., GIA-1234567890"
+              />
+            </div>
+
+            {/* Weight Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                label="Gold Weight (grams)"
+                id="weight"
+                name="weight"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.weight}
+                onChange={handleChange}
+                error={errors.weight}
+                placeholder="0.00"
+                required
+              />
+
+              <FormField
+                label="Diamond Weight (carats)"
+                id="diamondWeight"
+                name="diamondWeight"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.diamondWeight}
+                onChange={handleChange}
+                error={errors.diamondWeight}
+                placeholder="0.00"
               />
             </div>
 

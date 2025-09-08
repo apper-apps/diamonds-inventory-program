@@ -64,7 +64,7 @@ const Dashboard = () => {
         />
         <StatCard
           title="Total Value"
-          value={`$${(stats?.totalValue || 0).toLocaleString()}`}
+value={`₹${(stats?.totalValue || 0).toLocaleString()}`}
           icon="DollarSign"
           subtitle="Inventory worth"
           gradient="from-green-500 to-green-600"

@@ -13,8 +13,8 @@ const StatCard = ({ title, value, icon, subtitle, gradient = "from-blue-500 to-p
       <div className="flex items-center justify-between">
         <div>
           <p className="text-gray-600 text-sm font-medium mb-1">{title}</p>
-          <p className={`text-3xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
-            {value}
+<p className={`text-3xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
+            {typeof value === 'string' && value.startsWith('$') ? value.replace('$', '₹') : value}
           </p>
           {subtitle && (
             <p className="text-gray-500 text-sm mt-1">{subtitle}</p>

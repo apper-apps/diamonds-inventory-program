@@ -73,8 +73,7 @@ const updatedProduct = { ...products[index], ...productData };
     setStoredProducts(products);
     return true;
 },
-
-  async updateInventoryStatus(id, status) {
+async updateInventoryStatus(id, status) {
     await delay(250);
     const products = getStoredProducts();
     const index = products.findIndex(p => p.Id === parseInt(id));
@@ -90,5 +89,41 @@ const updatedProduct = { ...products[index], ...productData };
     products[index] = updatedProduct;
     setStoredProducts(products);
     return { ...updatedProduct };
+  },
+
+  async recalculateProductPrices() {
+    await delay(500);
+    const { pricingService } = await import('./pricingService');
+    const products = getStoredProducts();
+    
+    let updatedCount = 0;
+    const updatedProducts = products.map(product => {
+      if (product.goldType && product.weight) {
+        const newPrice = pricingService.calculateProductPrice(
+          product.goldType,
+          product.diamondType,
+          product.weight,
+          product.diamondWeight || 0,
+          product.diamondQuality || 'SI',
+          product.diamondColor || 'F-G'
+        );
+        
+        if (newPrice !== product.price) {
+          updatedCount++;
+          return { ...product, price: newPrice };
+        }
+      }
+      return product;
+    });
+    
+    if (updatedCount > 0) {
+      setStoredProducts(updatedProducts);
+    }
+    
+    return {
+      success: true,
+      message: `Updated prices for ${updatedCount} products`,
+      updatedCount
+    };
   }
 };
