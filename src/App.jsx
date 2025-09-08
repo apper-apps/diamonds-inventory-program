@@ -9,6 +9,7 @@ import Sales from "@/components/pages/Sales";
 import Customers from "@/components/pages/Customers";
 import Reports from "@/components/pages/Reports";
 import Pricing from "@/components/pages/Pricing";
+import BarcodeSearch from "@/components/pages/BarcodeSearch";
 import Login from "@/components/pages/Login";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
             <Route path="products" element={<Products />} />
             <Route path="inventory" element={<Inventory />} />
             <Route path="pricing" element={<Pricing />} />
+            <Route path="barcode-search" element={<BarcodeSearch />} />
             <Route path="sales" element={<Sales />} />
             <Route path="customers" element={<Customers />} />
             <Route path="reports" element={<Reports />} />

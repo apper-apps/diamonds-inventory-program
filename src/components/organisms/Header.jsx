@@ -1,18 +1,11 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import BarcodeScanner from "@/components/organisms/BarcodeScanner";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
+
 const Header = ({ onMenuToggle }) => {
   const location = useLocation();
-  const [scannerOpen, setScannerOpen] = useState(false);
-  
-const handleBarcodeScan = (barcode) => {
-    setScannerOpen(false);
-    // Store barcode for sales page and redirect
-    sessionStorage.setItem('scannedBarcode', barcode);
-    window.location.href = '/sales';
-  };
+const navigate = useNavigate();
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === "/") return "Dashboard";
@@ -47,11 +40,11 @@ const handleBarcodeScan = (barcode) => {
           <Button 
             variant="outline"
             size="sm" 
-            onClick={() => setScannerOpen(true)}
+            onClick={() => navigate('/barcode-search')}
             className="flex items-center"
           >
-            <ApperIcon name="Camera" className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Scan</span>
+            <ApperIcon name="QrCode" className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Barcode Search</span>
           </Button>
           
           <Button variant="outline" size="sm" className="hidden sm:flex">
@@ -65,12 +58,7 @@ const handleBarcodeScan = (barcode) => {
         </div>
       </div>
       
-      <BarcodeScanner
-        isOpen={scannerOpen}
-        onClose={() => setScannerOpen(false)}
-onScan={handleBarcodeScan}
-      />
-    </header>
+</header>
   );
 };
 
