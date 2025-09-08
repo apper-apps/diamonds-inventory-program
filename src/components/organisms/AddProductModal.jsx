@@ -103,7 +103,7 @@ const newErrors = {};
       newErrors.price = "Valid price is required";
     }
     if (!formData.description.trim()) newErrors.description = "Description is required";
-    if (formData.certificateNumber && !/^[A-Za-z0-9\-]+$/.test(formData.certificateNumber)) {
+if (formData.certificateNumber && !/^[A-Za-z0-9-]+$/.test(formData.certificateNumber)) {
       newErrors.certificateNumber = "Certificate number must be alphanumeric";
     }
     setErrors(newErrors);
