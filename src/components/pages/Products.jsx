@@ -27,13 +27,20 @@ useEffect(() => {
     filterProducts();
   }, [products, searchTerm]);
 
-  const handleBarcodeScan = async (barcode) => {
+const handleBarcodeScan = async (barcode) => {
     try {
       const product = await productService.getByBarcode(barcode);
       if (product) {
-        // Highlight the found product by filtering
         setSearchTerm(barcode);
-        toast.success(`Product found: ${product.name}`);
+        toast.success(`Product found: ${product.name}`, {
+          onClick: () => window.location.href = '/sales'
+        });
+        // Add "Go to Sales" action
+        setTimeout(() => {
+          toast.info('Click here to go to Sales page', {
+            onClick: () => window.location.href = '/sales'
+          });
+        }, 2000);
       } else {
         toast.error('Product not found with this barcode');
       }

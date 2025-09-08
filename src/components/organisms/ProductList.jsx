@@ -4,10 +4,10 @@ import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 
 const ProductList = ({ products, onEdit, onDelete }) => {
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-US", {
+const formatPrice = (price) => {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD"
+      currency: "INR"
     }).format(price);
   };
 
