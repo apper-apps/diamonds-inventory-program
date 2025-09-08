@@ -2,6 +2,30 @@ import React from "react";
 import { motion } from "framer-motion";
 
 const Loading = ({ type = "default" }) => {
+  if (type === "camera") {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-6">
+        <div className="relative mb-4">
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="w-16 h-16 bg-gradient-to-br from-gold-400 to-gold-600 rounded-xl flex items-center justify-center shadow-lg"
+          >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              className="w-8 h-8 border-2 border-white border-t-transparent rounded-full"
+            />
+          </motion.div>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Initializing Camera</h3>
+        <p className="text-gray-600 text-center max-w-sm">
+          Please wait while we access your camera for barcode scanning...
+        </p>
+      </div>
+    );
+  }
+
   if (type === "table") {
     return (
       <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">

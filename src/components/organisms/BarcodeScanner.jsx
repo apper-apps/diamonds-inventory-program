@@ -1,9 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { BrowserMultiFormatReader } from '@zxing/library';
-import { toast } from 'react-toastify';
-import { motion, AnimatePresence } from 'framer-motion';
-import Button from '@/components/atoms/Button';
-import ApperIcon from '@/components/ApperIcon';
+import React, { useEffect, useRef, useState } from "react";
+import { BrowserMultiFormatReader } from "@zxing/library";
+import { toast } from "react-toastify";
+import { AnimatePresence, motion } from "framer-motion";
+import ApperIcon from "@/components/ApperIcon";
+import Error from "@/components/ui/Error";
+import Button from "@/components/atoms/Button";
 
 const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
   const videoRef = useRef(null);
@@ -24,62 +25,149 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
     };
   }, [isOpen]);
 
-  const startScanning = async () => {
+// Enhanced camera device selection with fallback
+  const getAvailableCamera = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      
+      if (videoDevices.length === 0) {
+        throw new Error('No camera devices found');
+      }
+      
+      // Prefer rear camera (environment facing)
+      const rearCamera = videoDevices.find(device => 
+        device.label.toLowerCase().includes('back') ||
+        device.label.toLowerCase().includes('rear') ||
+        device.label.toLowerCase().includes('environment')
+      );
+      
+      return rearCamera ? rearCamera.deviceId : videoDevices[0].deviceId;
+    } catch (err) {
+      console.warn('Device enumeration failed:', err);
+      return null;
+    }
+  };
+
+  const startScanning = async (retryCount = 0) => {
     try {
       setError(null);
       setScanning(true);
 
-      // Check for camera permission
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: 'environment', // Use rear camera if available
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        } 
-      });
+      // Try to get optimal camera device
+      const preferredDeviceId = await getAvailableCamera();
+      
+      // Configure video constraints with device preference
+      const videoConstraints = {
+        width: { ideal: 1280, min: 640 },
+        height: { ideal: 720, min: 480 },
+        facingMode: preferredDeviceId ? undefined : 'environment'
+      };
+      
+      if (preferredDeviceId) {
+        videoConstraints.deviceId = { exact: preferredDeviceId };
+      }
+
+      // Get camera stream with enhanced error handling
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          video: videoConstraints
+        });
+      } catch (deviceError) {
+        // Fallback: try any available camera
+        if (preferredDeviceId && retryCount === 0) {
+          console.warn('Preferred camera failed, trying fallback:', deviceError);
+          return startScanning(1); // Retry once without device preference
+        }
+        
+        // Final fallback: basic video request
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: { ideal: 'environment' } }
+        });
+      }
       
       setHasPermission(true);
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        
+        // Wait for video to be ready
+        await new Promise((resolve) => {
+          videoRef.current.onloadedmetadata = resolve;
+        });
       }
 
-      // Initialize ZXing code reader
+      // Initialize ZXing code reader with proper error handling
       codeReader.current = new BrowserMultiFormatReader();
 
-      // Start decoding from video element
+      // Get actual device ID from stream for more reliable scanning
+      const track = stream.getVideoTracks()[0];
+      const actualDeviceId = track.getSettings().deviceId;
+
+      // Start decoding with enhanced error handling
       codeReader.current.decodeFromVideoDevice(
-        undefined, // Use default video device
+        actualDeviceId || undefined,
         videoRef.current,
         (result, error) => {
           if (result) {
             const barcode = result.getText();
             handleScanSuccess(barcode);
           }
-          // Continue scanning even if no barcode found
+          // Log scanning errors for debugging but continue scanning
+          if (error && error.name !== 'NotFoundException') {
+            console.warn('Scanning error:', error);
+          }
         }
       );
 
     } catch (err) {
       console.error('Error starting scanner:', err);
       setHasPermission(false);
-      setError(err.message.includes('Permission denied') 
-        ? 'Camera permission denied. Please allow camera access and try again.'
-        : 'Unable to access camera. Please check your device settings.'
-      );
+      
+      // Enhanced error messaging
+      let errorMessage;
+      if (err.message.includes('Permission denied') || err.name === 'NotAllowedError') {
+        errorMessage = 'Camera permission denied. Please allow camera access and try again.';
+      } else if (err.message.includes('not found') || err.name === 'NotFoundError') {
+        errorMessage = 'No camera found. Please check that your device has a working camera.';
+      } else if (err.name === 'NotReadableError') {
+        errorMessage = 'Camera is already in use by another application.';
+      } else if (err.name === 'OverconstrainedError') {
+        errorMessage = 'Camera does not support the required settings.';
+      } else {
+        errorMessage = 'Unable to access camera. Please check your device settings and try again.';
+      }
+      
+      setError(errorMessage);
+setError(errorMessage);
       setScanning(false);
     }
   };
-
   const stopScanning = () => {
     if (codeReader.current) {
       codeReader.current.reset();
     }
     
-    if (videoRef.current && videoRef.current.srcObject) {
-      const tracks = videoRef.current.srcObject.getTracks();
-      tracks.forEach(track => track.stop());
-      videoRef.current.srcObject = null;
+// Enhanced cleanup with proper resource disposal
+    try {
+      // Stop and dispose of code reader
+      if (codeReader.current) {
+        codeReader.current.reset();
+        codeReader.current = null;
+      }
+      
+      // Stop video tracks
+      if (videoRef.current && videoRef.current.srcObject) {
+        const tracks = videoRef.current.srcObject.getTracks();
+        tracks.forEach(track => {
+          track.stop();
+          console.log('Stopped video track:', track.label);
+        });
+        videoRef.current.srcObject = null;
+      }
+    } catch (cleanupError) {
+      console.warn('Error during scanner cleanup:', cleanupError);
     }
     
     setScanning(false);
