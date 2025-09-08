@@ -11,13 +11,16 @@ const [formData, setFormData] = useState({
     category: "",
     goldType: "",
     diamondType: "",
+    diamondQuality: "",
+    certificateNumber: "",
     weight: "",
     dimensions: "",
     specifications: "",
     price: "",
     description: "",
     status: "Available",
-    barcode: ""
+    barcode: "",
+    images: []
   });
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState({});
@@ -32,13 +35,16 @@ name: editProduct.name || "",
           category: editProduct.category || "",
           goldType: editProduct.goldType || "",
           diamondType: editProduct.diamondType || "",
+          diamondQuality: editProduct.diamondQuality || "",
+          certificateNumber: editProduct.certificateNumber || "",
           weight: editProduct.weight?.toString() || "",
           dimensions: editProduct.dimensions || "",
           specifications: editProduct.specifications || "",
           price: editProduct.price?.toString() || "",
           description: editProduct.description || "",
           status: editProduct.status || "Available",
-          barcode: editProduct.barcode || ""
+          barcode: editProduct.barcode || "",
+          images: editProduct.images || []
         });
       } else {
 setFormData({
@@ -46,13 +52,16 @@ setFormData({
           category: "",
           goldType: "",
           diamondType: "",
+          diamondQuality: "",
+          certificateNumber: "",
           weight: "",
           dimensions: "",
           specifications: "",
           price: "",
           description: "",
           status: "Available",
-          barcode: ""
+          barcode: "",
+          images: []
         });
       }
       setErrors({});
@@ -94,6 +103,9 @@ const newErrors = {};
       newErrors.price = "Valid price is required";
     }
     if (!formData.description.trim()) newErrors.description = "Description is required";
+    if (formData.certificateNumber && !/^[A-Za-z0-9\-]+$/.test(formData.certificateNumber)) {
+      newErrors.certificateNumber = "Certificate number must be alphanumeric";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -106,8 +118,8 @@ const newErrors = {};
     setIsSubmitting(true);
     
     try {
-      const productData = {
-...formData,
+const productData = {
+        ...formData,
         weight: parseFloat(formData.weight),
         price: parseFloat(formData.price),
         barcode: formData.barcode || generateBarcode()
@@ -206,7 +218,93 @@ const newErrors = {};
                 error={errors.diamondType}
               />
             </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                label="Diamond Quality"
+                id="diamondQuality"
+                name="diamondQuality"
+                value={formData.diamondQuality}
+                onChange={handleChange}
+                error={errors.diamondQuality}
+                type="select"
+                options={[
+                  { value: "", label: "Select Diamond Quality" },
+                  { value: "FL", label: "FL - Flawless" },
+                  { value: "IF", label: "IF - Internally Flawless" },
+                  { value: "VVS1", label: "VVS1 - Very Very Slightly Included 1" },
+                  { value: "VVS2", label: "VVS2 - Very Very Slightly Included 2" },
+                  { value: "VS1", label: "VS1 - Very Slightly Included 1" },
+                  { value: "VS2", label: "VS2 - Very Slightly Included 2" },
+                  { value: "SI1", label: "SI1 - Slightly Included 1" },
+                  { value: "SI2", label: "SI2 - Slightly Included 2" },
+                  { value: "I1", label: "I1 - Included 1" },
+                  { value: "I2", label: "I2 - Included 2" },
+                  { value: "I3", label: "I3 - Included 3" }
+                ]}
+              />
 
+              <FormField
+                label="Certificate Number"
+                id="certificateNumber"
+                name="certificateNumber"
+                value={formData.certificateNumber}
+                onChange={handleChange}
+                error={errors.certificateNumber}
+                placeholder="e.g., GIA-1234567890"
+              />
+            </div>
+
+            <div className="space-y-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Product Images
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files);
+                    files.forEach(file => {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          images: [...prev.images, event.target.result]
+                        }));
+                      };
+                      reader.readAsDataURL(file);
+                    });
+                  }}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                {formData.images.length > 0 && (
+                  <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {formData.images.map((image, index) => (
+                      <div key={index} className="relative">
+                        <img 
+                          src={image} 
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-20 object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData(prev => ({
+                              ...prev,
+                              images: prev.images.filter((_, i) => i !== index)
+                            }));
+                          }}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 label="Weight (grams)"
@@ -229,7 +327,7 @@ const newErrors = {};
                 placeholder="e.g., 15mm x 10mm"
                 error={errors.dimensions}
               />
-            </div>
+</div>
 
             <FormField
               label="Specifications"
@@ -239,7 +337,7 @@ const newErrors = {};
               onChange={handleChange}
               placeholder="Additional specifications (clarity, color grade, etc.)"
               rows={3}
-            />
+/>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField

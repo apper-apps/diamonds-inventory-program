@@ -50,7 +50,9 @@ const Products = () => {
 const filtered = products.filter(product =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.barcode.toLowerCase().includes(searchTerm.toLowerCase())
+      product.barcode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (product.diamondQuality && product.diamondQuality.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (product.certificateNumber && product.certificateNumber.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     setFilteredProducts(filtered);
   };
