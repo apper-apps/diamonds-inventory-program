@@ -6,12 +6,12 @@ import ApperIcon from "@/components/ApperIcon";
 import { categoryService } from "@/services/api/categoryService";
 
 const AddProductModal = ({ isOpen, onClose, onSubmit, editProduct = null }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     name: "",
     category: "",
     price: "",
     description: "",
-    sku: ""
+    barcode: ""
   });
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState({});
@@ -26,7 +26,7 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editProduct = null }) => {
           category: editProduct.category || "",
           price: editProduct.price?.toString() || "",
           description: editProduct.description || "",
-          sku: editProduct.sku || ""
+barcode: editProduct.barcode || ""
         });
       } else {
         setFormData({
@@ -34,7 +34,7 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editProduct = null }) => {
           category: "",
           price: "",
           description: "",
-          sku: ""
+barcode: ""
         });
       }
       setErrors({});
@@ -58,11 +58,9 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editProduct = null }) => {
     }
   };
 
-  const generateSKU = () => {
-    const categoryPrefix = formData.category.slice(0, 2).toUpperCase();
-    const namePrefix = formData.name.slice(0, 3).toUpperCase();
-    const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
-    return `${categoryPrefix}-${namePrefix}-${randomNum}`;
+const generateBarcode = () => {
+    const randomDigits = Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
+    return `4CD-${randomDigits}`;
   };
 
   const validateForm = () => {
@@ -88,9 +86,9 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editProduct = null }) => {
     
     try {
       const productData = {
-        ...formData,
+...formData,
         price: parseFloat(formData.price),
-        sku: formData.sku || generateSKU()
+        barcode: formData.barcode || generateBarcode()
       };
 
       await onSubmit(productData);
@@ -164,11 +162,11 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editProduct = null }) => {
             />
 
             <FormField
-              label="SKU"
-              name="sku"
-              value={formData.sku}
+label="Barcode"
+              name="barcode"
+              value={formData.barcode}
               onChange={handleChange}
-              placeholder="Leave empty to auto-generate"
+              placeholder="Leave empty to auto-generate (4CD-XXXXXX)"
             />
 
             <FormField

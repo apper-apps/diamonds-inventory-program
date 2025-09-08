@@ -34,7 +34,7 @@ export const productService = {
     const products = getStoredProducts();
     const maxId = Math.max(...products.map(p => p.Id), 0);
     const newProduct = {
-      ...productData,
+...productData,
       Id: maxId + 1,
       createdAt: new Date().toISOString().split('T')[0]
     };

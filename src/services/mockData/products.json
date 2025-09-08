@@ -1,74 +1,74 @@
 [
   {
-    "Id": 1,
+"Id": 1,
     "name": "Classic Diamond Solitaire Ring",
     "category": "Rings",
     "price": 2850,
     "description": "Elegant 1.2ct round brilliant diamond solitaire in 18k white gold setting",
-    "sku": "DR-SOL-001",
+    "barcode": "4CD-123456",
     "createdAt": "2024-01-15"
   },
   {
-    "Id": 2,
+"Id": 2,
     "name": "Emerald Cut Diamond Earrings",
     "category": "Earrings",
     "price": 4200,
     "description": "Stunning 2ct emerald cut diamond stud earrings in platinum",
-    "sku": "DE-EME-002",
+    "barcode": "4CD-234567",
     "createdAt": "2024-01-18"
   },
   {
-    "Id": 3,
+"Id": 3,
     "name": "Princess Cut Diamond Tennis Bracelet",
     "category": "Bracelets",
     "price": 6500,
     "description": "Luxurious princess cut diamond tennis bracelet, 5ct total weight",
-    "sku": "DB-TEN-003",
+    "barcode": "4CD-345678",
     "createdAt": "2024-01-20"
   },
   {
-    "Id": 4,
+"Id": 4,
     "name": "Vintage Diamond Necklace",
     "category": "Necklaces",
     "price": 3800,
     "description": "Art deco inspired diamond necklace with vintage charm",
-    "sku": "DN-VIN-004",
+    "barcode": "4CD-456789",
     "createdAt": "2024-01-22"
   },
   {
     "Id": 5,
-    "name": "Round Brilliant Diamond Engagement Ring",
+"name": "Round Brilliant Diamond Engagement Ring",
     "category": "Rings",
     "price": 5200,
     "description": "Breathtaking 2.5ct round brilliant diamond engagement ring with halo setting",
-    "sku": "DR-ENG-005",
+    "barcode": "4CD-567890",
     "createdAt": "2024-01-25"
   },
   {
-    "Id": 6,
+"Id": 6,
     "name": "Diamond Cluster Pendant",
     "category": "Necklaces",
     "price": 1850,
     "description": "Elegant diamond cluster pendant on 18k gold chain",
-    "sku": "DN-CLU-006",
+    "barcode": "4CD-678901",
     "createdAt": "2024-01-28"
   },
   {
-    "Id": 7,
+"Id": 7,
     "name": "Marquise Diamond Anniversary Band",
     "category": "Rings",
     "price": 3200,
     "description": "Beautiful marquise diamond anniversary band in rose gold",
-    "sku": "DR-ANN-007",
+    "barcode": "4CD-789012",
     "createdAt": "2024-02-01"
   },
   {
-    "Id": 8,
+"Id": 8,
     "name": "Diamond Drop Earrings",
     "category": "Earrings",
     "price": 2750,
     "description": "Sophisticated diamond drop earrings perfect for special occasions",
-    "sku": "DE-DRP-008",
+    "barcode": "4CD-890123",
     "createdAt": "2024-02-03"
   }
 ]

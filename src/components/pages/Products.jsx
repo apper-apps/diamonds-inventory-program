@@ -47,10 +47,10 @@ const Products = () => {
       return;
     }
 
-    const filtered = products.filter(product =>
+const filtered = products.filter(product =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.sku.toLowerCase().includes(searchTerm.toLowerCase())
+      product.barcode.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredProducts(filtered);
   };
