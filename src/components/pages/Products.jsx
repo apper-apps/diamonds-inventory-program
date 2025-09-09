@@ -32,15 +32,15 @@ const handleBarcodeScan = async (barcode) => {
     try {
       const product = await productService.getByBarcode(barcode);
       if (product) {
-        // Filter to show the found product
+// Filter to show the found product
         setSearchTerm(barcode);
         
         // Show product details with action buttons
         const productDetails = `
-          📦 ${product.name}
-          💰 ₹${product.price?.toLocaleString() || 'Price not set'}
-          📊 Status: ${product.status || 'Available'}
-          🏷️ Category: ${product.category || 'Uncategorized'}
+          📦 ${product.Name}
+          💰 ₹${product.price_c?.toLocaleString() || 'Price not set'}
+          📊 Status: ${product.status_c || 'Available'}
+          🏷️ Category: ${product.category_c || 'Uncategorized'}
         `;
         
         toast.success(

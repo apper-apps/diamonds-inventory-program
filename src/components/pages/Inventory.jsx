@@ -48,18 +48,18 @@ const [editingProduct, setEditingProduct] = useState(null);
 
     if (searchTerm) {
       filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.barcode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+product.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.barcode_c.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description_c.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (categoryFilter) {
-      filtered = filtered.filter(product => product.category === categoryFilter);
+filtered = filtered.filter(product => product.category_c === categoryFilter);
     }
 
     if (statusFilter) {
-      filtered = filtered.filter(product => product.status === statusFilter);
+filtered = filtered.filter(product => product.status_c === statusFilter);
     }
 
     setFilteredProducts(filtered);
@@ -72,17 +72,17 @@ const [editingProduct, setEditingProduct] = useState(null);
       const calculatedPrice = pricingService.calculateProductPrice(
         productData.goldType,
         productData.diamondType,
-        parseFloat(productData.weight) || 0,
-        parseFloat(productData.diamondWeight) || 0,
+parseFloat(productData.weight_c) || 0,
+        parseFloat(productData.diamond_weight_c) || 0,
         productData.diamondQuality || 'SI',
         productData.diamondColor || 'F-G'
       );
 
       const newProduct = await productService.create({
-        ...productData,
-        weight: parseFloat(productData.weight),
-        diamondWeight: parseFloat(productData.diamondWeight) || 0,
-        price: calculatedPrice
+...productData,
+        weight_c: parseFloat(productData.weight_c),
+        diamond_weight_c: parseFloat(productData.diamond_weight_c) || 0,
+        price_c: calculatedPrice
       });
 
       setProducts(prev => [...prev, newProduct]);
@@ -96,8 +96,8 @@ const [editingProduct, setEditingProduct] = useState(null);
   const handleEditProduct = async (productData) => {
     try {
       // Calculate price using pricing service
-      const calculatedPrice = pricingService.calculateProductPrice(
-        productData.goldType,
+const calculatedPrice = pricingService.calculateProductPrice(
+        productData.gold_type_c,
         productData.diamondType,
         parseFloat(productData.weight) || 0,
         parseFloat(productData.diamondWeight) || 0,
@@ -107,11 +107,11 @@ const [editingProduct, setEditingProduct] = useState(null);
 
 const updatedProduct = await productService.update(editingProduct.Id, {
         ...productData,
-        weight: parseFloat(productData.weight) || 0,
-        diamondWeight: parseFloat(productData.diamondWeight) || 0,
-        price: parseFloat(calculatedPrice) || 0
+        weight_c: parseFloat(productData.weight_c) || 0,
+        diamond_weight_c: parseFloat(productData.diamond_weight_c) || 0,
+        price_c: parseFloat(calculatedPrice) || 0
       });
-
+      toast.success("Product updated successfully!");
       setProducts(prev => prev.map(p => p.Id === updatedProduct.Id ? updatedProduct : p));
       setEditingProduct(null);
       toast.success("Product updated successfully!");
@@ -142,7 +142,7 @@ const updatedProduct = await productService.update(editingProduct.Id, {
     },
     {
       label: "Available",
-      value: products.filter(p => p.status === "Available").length,
+value: products.filter(p => p.status_c === "Available").length,
       icon: "CheckCircle",
       color: "from-green-500 to-green-600"
     },
@@ -153,14 +153,14 @@ const updatedProduct = await productService.update(editingProduct.Id, {
       color: "from-yellow-500 to-yellow-600"
     },
     {
-      label: "Total Value",
-      value: `₹${products.reduce((sum, p) => sum + (p.price || 0), 0).toLocaleString()}`,
+label: "Total Value",
+      value: `₹${products.reduce((sum, p) => sum + (p.price_c || 0), 0).toLocaleString()}`,
       icon: "DollarSign",
       color: "from-gold-500 to-gold-600"
     }
   ];
 
-  const categories = [...new Set(products.map(p => p.category))];
+const categories = [...new Set(products.map(p => p.category_c))];
 
   if (loading) return <Loading />;
   if (error) return <Error message={error} />;
