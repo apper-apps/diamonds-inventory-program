@@ -36,8 +36,8 @@ const Sales = () => {
     loadData();
   }, []);
 
-  const loadData = async () => {
-try {
+const loadData = async () => {
+    try {
       setLoading(true);
       setError(null);
       const [productsData, customersData] = await Promise.all([
@@ -232,7 +232,6 @@ className="flex flex-col gap-4"
             className="flex items-center gap-2"
           >
             <ApperIcon name="UserPlus" size={16} />
-            <span className="hidden sm:inline">Add Customer</span>
 <span className="hidden sm:inline">Add Customer</span>
           </Button>
         </div>
