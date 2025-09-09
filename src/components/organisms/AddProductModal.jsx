@@ -561,14 +561,14 @@ const productData = {
                   type="file"
                   accept="image/*"
                   multiple
-                  onChange={(e) => {
+onChange={(e) => {
                     const files = Array.from(e.target.files);
                     files.forEach(file => {
                       const reader = new FileReader();
                       reader.onload = (event) => {
                         setFormData(prev => ({
                           ...prev,
-                          images: [...prev.images, event.target.result]
+                          images_c: prev.images_c ? prev.images_c + ',' + event.target.result : event.target.result
                         }));
                       };
                       reader.readAsDataURL(file);
