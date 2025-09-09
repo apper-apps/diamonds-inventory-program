@@ -346,10 +346,12 @@ class ProductService {
   }
 
   // Generate barcode
-  generateBarcode() {
+generateBarcode() {
     const randomDigits = Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
     return `4CD-${randomDigits}`;
-// Recalculate product prices based on current pricing rules
+  }
+
+  // Recalculate product prices based on current pricing rules
   async recalculateProductPrices() {
     try {
       await delay(500);
