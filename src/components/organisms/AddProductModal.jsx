@@ -576,21 +576,23 @@ onChange={(e) => {
                   }}
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
-                {formData.images.length > 0 && (
+{formData.images_c?.length > 0 && (
                   <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {formData.images.map((image, index) => (
+                    {formData.images_c.split(',').filter(img => img.trim()).map((image, index) => (
                       <div key={index} className="relative">
                         <img 
-                          src={image} 
+                          src={image.trim()} 
                           alt={`Preview ${index + 1}`}
                           className="w-full h-20 object-cover rounded-lg"
                         />
                         <button
                           type="button"
                           onClick={() => {
+                            const imageArray = formData.images_c.split(',').filter(img => img.trim());
+                            imageArray.splice(index, 1);
                             setFormData(prev => ({
                               ...prev,
-                              images: prev.images.filter((_, i) => i !== index)
+                              images_c: imageArray.join(',')
                             }));
                           }}
                           className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
