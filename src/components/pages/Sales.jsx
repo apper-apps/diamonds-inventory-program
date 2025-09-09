@@ -10,7 +10,6 @@ import Loading from "@/components/ui/Loading";
 import SearchBar from "@/components/molecules/SearchBar";
 import Button from "@/components/atoms/Button";
 import BarcodeScanner from "@/components/organisms/BarcodeScanner";
-import BarcodeScanner from "@/components/organisms/BarcodeScanner";
 import InvoiceModal from "@/components/organisms/InvoiceModal";
 import CustomerModal from "@/components/organisms/CustomerModal";
 import Sidebar from "@/components/organisms/Sidebar";
@@ -234,10 +233,10 @@ className="flex flex-col gap-4"
           >
             <ApperIcon name="UserPlus" size={16} />
             <span className="hidden sm:inline">Add Customer</span>
-</Button>
+<span className="hidden sm:inline">Add Customer</span>
+          </Button>
         </div>
       </div>
-</div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
