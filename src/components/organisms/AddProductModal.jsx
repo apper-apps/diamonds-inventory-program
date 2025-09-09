@@ -7,23 +7,26 @@ import Button from "@/components/atoms/Button";
 
 const AddProductModal = ({ isOpen, onClose, onSubmit, editProduct = null }) => {
 const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-goldType: "",
-    diamondType: "",
-    diamondQuality: "",
-    diamondColor: "",
-    certificateNumber: "",
-    weight: "",
-    diamondWeight: "",
-    dimensions: "",
-    specifications: "",
-price: "0",
-    description: "",
-    status: "Available",
-    barcode: "",
-    images: []
+    Name: "",
+    category_c: "",
+    gold_type_c: "",
+    diamond_type_c: "",
+    diamond_quality_c: "",
+    diamond_color_c: "",
+    certificate_number_c: "",
+    weight_c: "",
+    diamond_weight_c: "",
+    dimensions_c: "",
+    specifications_c: "",
+    price_c: "0",
+    description_c: "",
+    status_c: "Available",
+    barcode_c: "",
+    images_c: "",
+    manualPricing: false
   });
+  const [calculatedPrice, setCalculatedPrice] = useState(0);
+  const [priceBreakdown, setPriceBreakdown] = useState({ gold: 0, diamond: 0, total: 0 });
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,43 +35,47 @@ price: "0",
     if (isOpen) {
       loadCategories();
       if (editProduct) {
-        setFormData({
-name: editProduct.name || "",
-          category: editProduct.category || "",
-          goldType: editProduct.goldType || "",
-          diamondType: editProduct.diamondType || "",
-          diamondQuality: editProduct.diamondQuality || "",
-          diamondColor: editProduct.diamondColor || "",
-          certificateNumber: editProduct.certificateNumber || "",
-          weight: editProduct.weight?.toString() || "",
-          diamondWeight: editProduct.diamondWeight?.toString() || "",
-          dimensions: editProduct.dimensions || "",
-          specifications: editProduct.specifications || "",
-          price: editProduct.price?.toString() || "0",
-          description: editProduct.description || "",
-          status: editProduct.status || "Available",
-          barcode: editProduct.barcode || "",
-          images: editProduct.images || []
+setFormData({
+          Name: editProduct.name || "",
+          category_c: editProduct.category || "",
+          gold_type_c: editProduct.goldType || "",
+          diamond_type_c: editProduct.diamondType || "",
+          diamond_quality_c: editProduct.diamondQuality || "",
+          diamond_color_c: editProduct.diamondColor || "",
+          certificate_number_c: editProduct.certificateNumber || "",
+          weight_c: editProduct.weight?.toString() || "",
+          diamond_weight_c: editProduct.diamondWeight?.toString() || "",
+          dimensions_c: editProduct.dimensions || "",
+          specifications_c: editProduct.specifications || "",
+          price_c: editProduct.price?.toString() || "0",
+          description_c: editProduct.description || "",
+          status_c: editProduct.status || "Available",
+          barcode_c: editProduct.barcode || "",
+          images_c: editProduct.images || "",
+          manualPricing: false
         });
       } else {
 setFormData({
-          name: "",
-          category: "",
-          goldType: "",
-          diamondType: "",
-          diamondQuality: "",
-          diamondColor: "",
-          certificateNumber: "",
-          weight: "",
-          diamondWeight: "",
-          dimensions: "",
-          specifications: "",
-          price: "0",
-          description: "",
-          status: "Available",
-          barcode: "",
-          images: []
+          Name: "",
+          category_c: "",
+          gold_type_c: "",
+          diamond_type_c: "",
+          diamond_quality_c: "",
+          diamond_color_c: "",
+          certificate_number_c: "",
+          weight_c: "",
+          diamond_weight_c: "",
+          dimensions_c: "",
+          specifications_c: "",
+          price_c: "0",
+          description_c: "",
+          status_c: "Available",
+          barcode_c: "",
+          images_c: "",
+          manualPricing: false
         });
+        setCalculatedPrice(0);
+        setPriceBreakdown({ gold: 0, diamond: 0, total: 0 });
       }
       setErrors({});
     }
@@ -83,35 +90,96 @@ setFormData({
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+const handleChange = async (e) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    
+    setFormData(prev => ({ ...prev, [name]: newValue }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
+    
+    // Calculate price automatically when relevant fields change
+    if (['gold_type_c', 'diamond_type_c', 'diamond_quality_c', 'diamond_color_c', 'weight_c', 'diamond_weight_c'].includes(name) || name === 'manualPricing') {
+      setTimeout(() => calculatePrice({ ...formData, [name]: newValue }), 100);
+    }
   };
+  
+  const calculatePrice = async (data = formData) => {
+    if (data.manualPricing) return;
+    
+    try {
+      const { pricingService } = await import('@/services/api/pricingService');
+      
+      if (data.gold_type_c && data.weight_c && parseFloat(data.weight_c) > 0) {
+        const goldWeight = parseFloat(data.weight_c) || 0;
+        const diamondWeight = parseFloat(data.diamond_weight_c) || 0;
+        
+        const calculatedPrice = pricingService.calculateProductPrice(
+          data.gold_type_c,
+          data.diamond_type_c || '',
+          goldWeight,
+          diamondWeight,
+          data.diamond_quality_c || 'SI',
+          data.diamond_color_c || 'F-G'
+        );
+        
+        // Calculate breakdown
+        const goldRates = await pricingService.getGoldRates();
+        const diamondRates = await pricingService.getDiamondRates();
+        const goldCost = goldWeight * (goldRates[data.gold_type_c] || 0);
+        const diamondCost = calculatedPrice - goldCost;
+        
+        setCalculatedPrice(calculatedPrice);
+        setPriceBreakdown({
+          gold: goldCost,
+          diamond: diamondCost,
+          total: calculatedPrice
+        });
+        
+        setFormData(prev => ({ ...prev, price_c: calculatedPrice.toString() }));
+      }
+    } catch (error) {
+      console.error('Error calculating price:', error);
+    }
+  };
+  
+  // Calculate price when component mounts or edit product changes
+  useEffect(() => {
+    if (isOpen && !formData.manualPricing) {
+      calculatePrice();
+    }
+  }, [isOpen, editProduct]);
 
 const generateBarcode = () => {
     const randomDigits = Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
     return `4CD-${randomDigits}`;
   };
 
-  const validateForm = () => {
-const newErrors = {};
+const validateForm = () => {
+    const newErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = "Product name is required";
-    if (!formData.category) newErrors.category = "Category is required";
-    if (!formData.goldType) newErrors.goldType = "Gold type is required";
-    if (!formData.weight || parseFloat(formData.weight) <= 0) {
-      newErrors.weight = "Valid weight is required";
+    if (!formData.Name.trim()) newErrors.Name = "Product name is required";
+    if (!formData.category_c) newErrors.category_c = "Category is required";
+    if (!formData.gold_type_c) newErrors.gold_type_c = "Gold type is required";
+    if (!formData.weight_c || parseFloat(formData.weight_c) <= 0) {
+      newErrors.weight_c = "Valid gold weight is required";
     }
-const priceValue = parseFloat(formData.price);
-    if (!formData.price || isNaN(priceValue) || priceValue < 0) {
-      newErrors.price = "Valid price is required";
+    
+    // For diamonds, require quality and color if diamond weight is provided
+    if (formData.diamond_weight_c && parseFloat(formData.diamond_weight_c) > 0) {
+      if (!formData.diamond_type_c) newErrors.diamond_type_c = "Diamond type is required when diamond weight is specified";
+      if (!formData.diamond_quality_c) newErrors.diamond_quality_c = "Diamond quality is required when diamond weight is specified";
+      if (!formData.diamond_color_c) newErrors.diamond_color_c = "Diamond color is required when diamond weight is specified";
     }
-    if (!formData.description.trim()) newErrors.description = "Description is required";
-if (formData.certificateNumber && !/^[A-Za-z0-9-]+$/.test(formData.certificateNumber)) {
-      newErrors.certificateNumber = "Certificate number must be alphanumeric";
+    
+    const priceValue = parseFloat(formData.price_c);
+    if (!formData.price_c || isNaN(priceValue) || priceValue < 0) {
+      newErrors.price_c = "Valid price is required";
+    }
+    if (!formData.description_c.trim()) newErrors.description_c = "Description is required";
+    if (formData.certificate_number_c && !/^[A-Za-z0-9-]+$/.test(formData.certificate_number_c)) {
+      newErrors.certificate_number_c = "Certificate number must be alphanumeric";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -126,11 +194,22 @@ if (formData.certificateNumber && !/^[A-Za-z0-9-]+$/.test(formData.certificateNu
     
     try {
 const productData = {
-        ...formData,
-        weight: parseFloat(formData.weight) || 0,
-        diamondWeight: parseFloat(formData.diamondWeight) || 0,
-        price: parseFloat(formData.price) || 0,
-        barcode: formData.barcode || generateBarcode()
+        Name: formData.Name,
+        category_c: formData.category_c,
+        gold_type_c: formData.gold_type_c,
+        diamond_type_c: formData.diamond_type_c || '',
+        diamond_quality_c: formData.diamond_quality_c || '',
+        diamond_color_c: formData.diamond_color_c || '',
+        certificate_number_c: formData.certificate_number_c || '',
+        weight_c: parseFloat(formData.weight_c) || 0,
+        diamond_weight_c: parseFloat(formData.diamond_weight_c) || 0,
+        dimensions_c: formData.dimensions_c || '',
+        specifications_c: formData.specifications_c || '',
+        price_c: parseFloat(formData.price_c) || 0,
+        description_c: formData.description_c,
+        status_c: formData.status_c || 'Available',
+        barcode_c: formData.barcode_c || generateBarcode(),
+        images_c: formData.images_c || ''
       };
 
       await onSubmit(productData);
@@ -168,73 +247,76 @@ const productData = {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+<form onSubmit={handleSubmit} className="p-6 space-y-4">
             <FormField
               label="Product Name"
-              name="name"
-              value={formData.name}
+              name="Name"
+              value={formData.Name}
               onChange={handleChange}
               placeholder="Enter product name"
-              error={errors.name}
+              error={errors.Name}
               required
             />
 
-<FormField
+            <FormField
               label="Category"
-              name="category"
+              name="category_c"
               type="select"
-              value={formData.category}
+              value={formData.category_c}
               onChange={handleChange}
-              options={categories}
-              error={errors.category}
+              options={[
+                { value: "Rings", label: "Rings" },
+                { value: "Earrings", label: "Earrings" },
+                { value: "Necklaces", label: "Necklaces" },
+                { value: "Bracelets", label: "Bracelets" }
+              ]}
+              error={errors.category_c}
               required
             />
 
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 label="Gold Type"
-                name="goldType"
+                name="gold_type_c"
                 type="select"
-                value={formData.goldType}
+                value={formData.gold_type_c}
                 onChange={handleChange}
                 options={[
+                  { value: "", label: "Select Gold Type" },
                   { value: "14k", label: "14k Gold" },
                   { value: "18k", label: "18k Gold" },
                   { value: "22k", label: "22k Gold" },
-                  { value: "24k", label: "24k Gold" },
-                  { value: "silver", label: "Silver" }
+                  { value: "24k Gold", label: "24k Gold" },
+                  { value: "Silver", label: "Silver" }
                 ]}
-                error={errors.goldType}
+                error={errors.gold_type_c}
                 required
               />
 
               <FormField
                 label="Diamond Type"
-                name="diamondType"
+                name="diamond_type_c"
                 type="select"
-                value={formData.diamondType}
+                value={formData.diamond_type_c}
                 onChange={handleChange}
                 options={[
                   { value: "", label: "Select Diamond Type" },
                   { value: "round-brilliant", label: "Round Brilliant" },
                   { value: "marquise", label: "Marquise" },
                   { value: "princess", label: "Princess" },
-                  { value: "baguette", label: "Baguette" },
-                  { value: "pear-cut", label: "Pear Cut" },
-                  { value: "oval-cut", label: "Oval Cut" },
-                  { value: "emerald-cut", label: "Emerald Cut" }
+                  { value: "baguette", label: "Baguette" }
                 ]}
-                error={errors.diamondType}
+                error={errors.diamond_type_c}
               />
             </div>
-<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <FormField
                 label="Diamond Quality"
-                id="diamondQuality"
-                name="diamondQuality"
-                value={formData.diamondQuality}
+                name="diamond_quality_c"
+                value={formData.diamond_quality_c}
                 onChange={handleChange}
-                error={errors.diamondQuality}
+                error={errors.diamond_quality_c}
                 type="select"
                 options={[
                   { value: "", label: "Select Diamond Quality" },
@@ -243,19 +325,18 @@ const productData = {
                   { value: "VS", label: "VS - Very Slightly Included" },
                   { value: "VS-VVS", label: "VS-VVS - Very Slightly to Very Very Slightly Included" },
                   { value: "VVS", label: "VVS - Very Very Slightly Included" },
-                  { value: "IF", label: "IF - Internally Flawless (Solitaire only)" }
+                  { value: "IF", label: "IF - Internally Flawless" }
                 ]}
               />
 
               <FormField
                 label="Diamond Color"
-                id="diamondColor"
-                name="diamondColor"
-                value={formData.diamondColor}
+                name="diamond_color_c"
+                value={formData.diamond_color_c}
                 onChange={handleChange}
-                error={errors.diamondColor}
+                error={errors.diamond_color_c}
                 type="select"
-options={[
+                options={[
                   { value: "", label: "Select Diamond Color" },
                   { value: "F-G", label: "F-G Grade" },
                   { value: "G-H", label: "G-H Grade" },
@@ -263,13 +344,12 @@ options={[
                 ]}
               />
 
-<FormField
+              <FormField
                 label="Certificate Number"
-                id="certificateNumber"
-                name="certificateNumber"
-                value={formData.certificateNumber}
+                name="certificate_number_c"
+                value={formData.certificate_number_c}
                 onChange={handleChange}
-                error={errors.certificateNumber}
+                error={errors.certificate_number_c}
                 placeholder="e.g., GIA-1234567890"
               />
             </div>
@@ -278,31 +358,131 @@ options={[
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 label="Gold Weight (grams)"
-                id="weight"
-                name="weight"
+                name="weight_c"
                 type="number"
                 step="0.01"
                 min="0"
-                value={formData.weight}
+                value={formData.weight_c}
                 onChange={handleChange}
-                error={errors.weight}
+                error={errors.weight_c}
                 placeholder="0.00"
                 required
               />
 
               <FormField
                 label="Diamond Weight (carats)"
-                id="diamondWeight"
-                name="diamondWeight"
+                name="diamond_weight_c"
                 type="number"
                 step="0.01"
                 min="0"
-                value={formData.diamondWeight}
+                value={formData.diamond_weight_c}
                 onChange={handleChange}
-                error={errors.diamondWeight}
+                error={errors.diamond_weight_c}
                 placeholder="0.00"
               />
             </div>
+
+            {/* Pricing Section */}
+            <div className="bg-gray-50 p-4 rounded-lg space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-700">Pricing</h3>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="manualPricing"
+                    checked={formData.manualPricing}
+                    onChange={handleChange}
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  Manual Pricing (Solitaire/Colorstone)
+                </label>
+              </div>
+              
+              {!formData.manualPricing && calculatedPrice > 0 && (
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Gold Cost:</span>
+                    <span>₹{priceBreakdown.gold.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Diamond Cost:</span>
+                    <span>₹{priceBreakdown.diamond.toLocaleString()}</span>
+                  </div>
+                  <div className="border-t pt-2 flex justify-between font-medium">
+                    <span>Total Price:</span>
+                    <span>₹{priceBreakdown.total.toLocaleString()}</span>
+                  </div>
+                </div>
+              )}
+              
+              <FormField
+                label={formData.manualPricing ? "Manual Price (₹)" : "Calculated Price (₹)"}
+                name="price_c"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price_c}
+                onChange={handleChange}
+                error={errors.price_c}
+                placeholder="0.00"
+                disabled={!formData.manualPricing}
+                required
+              />
+            </div>
+
+            {/* Additional Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                label="Dimensions"
+                name="dimensions_c"
+                value={formData.dimensions_c}
+                onChange={handleChange}
+                placeholder="e.g., 20mm x 15mm"
+              />
+
+              <FormField
+                label="Status"
+                name="status_c"
+                type="select"
+                value={formData.status_c}
+                onChange={handleChange}
+                options={[
+                  { value: "Available", label: "Available" },
+                  { value: "Reserved", label: "Reserved" },
+                  { value: "Sold", label: "Sold" }
+                ]}
+              />
+            </div>
+
+            <FormField
+              label="Specifications"
+              name="specifications_c"
+              type="textarea"
+              value={formData.specifications_c}
+              onChange={handleChange}
+              placeholder="Technical specifications and details"
+              rows={3}
+            />
+
+            <FormField
+              label="Description"
+              name="description_c"
+              type="textarea"
+              value={formData.description_c}
+              onChange={handleChange}
+              error={errors.description_c}
+              placeholder="Product description"
+              rows={3}
+              required
+            />
+
+            <FormField
+              label="Barcode"
+              name="barcode_c"
+              value={formData.barcode_c}
+              onChange={handleChange}
+              placeholder="Product barcode (auto-generated if empty)"
+            />
 
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">

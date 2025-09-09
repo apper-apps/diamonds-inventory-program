@@ -377,14 +377,60 @@ export const productService = {
   async updateInventoryStatus(id, status) {
     return this.update(id, { status });
   },
-
-  async recalculateProductPrices() {
-    // This would need to be implemented based on pricing service integration
-    await delay(500);
-    return {
-      success: true,
-      message: "Price recalculation completed",
-      updatedCount: 0
-};
+async recalculateProductPrices() {
+    try {
+      await delay(500);
+      
+      // Get all products
+      const products = await this.getAll();
+      
+      // Import pricing service
+      const { pricingService } = await import('./pricingService.js');
+      
+      let updatedCount = 0;
+      const updates = [];
+      
+      // Calculate new prices for each product
+      for (const product of products) {
+        if (product.goldType && product.weight && product.weight > 0) {
+          const newPrice = pricingService.calculateProductPrice(
+            product.goldType,
+            product.diamondType || '',
+            product.weight,
+            product.diamondWeight || 0,
+            product.diamondQuality || 'SI',
+            product.diamondColor || 'F-G'
+          );
+          
+          if (newPrice !== product.price) {
+            updates.push({
+              Id: product.Id,
+              price_c: newPrice
+            });
+            updatedCount++;
+          }
+        }
+      }
+      
+      // Batch update products with new prices
+      if (updates.length > 0) {
+        const apperClient = getApperClient();
+        const params = { records: updates };
+        const response = await apperClient.updateRecord('product_c', params);
+        
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+      }
+      
+      return {
+        success: true,
+        message: `Successfully recalculated prices for ${updatedCount} products`,
+        updatedCount
+      };
+    } catch (error) {
+      console.error("Error recalculating product prices:", error);
+      throw error;
+    }
   }
 };
