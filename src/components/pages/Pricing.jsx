@@ -105,27 +105,30 @@ try {
   if (error) return <Error message={error} onRetry={loadPricingData} />;
 
   return (
-    <div className="space-y-6">
+<div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pricing Management</h1>
-          <p className="text-gray-600 mt-1">
-            Manage daily gold and diamond rates for automatic price calculation
-          </p>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Pricing Management</h1>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">
+              Manage daily gold and diamond rates for automatic price calculation
+            </p>
         </div>
         
-        {canEdit && (
-          <Button
-onClick={recalculateAllPrices}
-            disabled={updating}
-            variant="primary"
-            className="shrink-0 flex items-center gap-2"
-          >
-            <ApperIcon name="RefreshCw" size={16} />
-            Recalculate All Prices
-          </Button>
-        )}
+{canEdit && (
+            <Button
+              onClick={recalculateAllPrices}
+              disabled={updating}
+              variant="primary"
+              className="shrink-0 flex items-center gap-2 w-full sm:w-auto min-h-[44px]"
+            >
+              <ApperIcon name="RefreshCw" size={16} />
+              <span className="hidden sm:inline">Recalculate All Prices</span>
+              <span className="sm:hidden">Recalculate</span>
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Last Updated Info */}
@@ -133,16 +136,16 @@ onClick={recalculateAllPrices}
         <div className="flex items-center gap-2">
           <ApperIcon name="Clock" size={16} className="text-blue-600" />
           <span className="text-blue-900 font-semibold text-sm">
-            Last Updated: {new Date(lastUpdated).toLocaleString('en-IN', {
+Last Updated: {new Date(lastUpdated).toLocaleString('en-IN', {
               timeZone: 'Asia/Kolkata',
-              dateStyle: 'medium',
+              dateStyle: 'short',
               timeStyle: 'short'
             })}
           </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Gold Rates Card */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="p-6 border-b border-gray-200">
@@ -158,7 +161,7 @@ onClick={recalculateAllPrices}
               </div>
               
               {canEdit && (
-                <div className="flex gap-2">
+<div className="flex flex-col sm:flex-row gap-2">
                   {editingGold ? (
                     <>
                       <Button
@@ -166,6 +169,7 @@ onClick={recalculateAllPrices}
                         variant="outline"
                         size="sm"
                         disabled={updating}
+                        className="w-full sm:w-auto min-h-[36px]"
                       >
                         Cancel
                       </Button>
@@ -173,6 +177,7 @@ onClick={recalculateAllPrices}
                         onClick={updateGoldRates}
                         size="sm"
                         disabled={updating}
+                        className="w-full sm:w-auto min-h-[36px]"
                       >
                         {updating ? "Saving..." : "Save"}
                       </Button>
@@ -182,6 +187,7 @@ onClick={recalculateAllPrices}
                       onClick={() => setEditingGold(true)}
                       variant="outline"
                       size="sm"
+                      className="w-full sm:w-auto min-h-[36px]"
                     >
                       <ApperIcon name="Edit" size={14} />
                       Edit
@@ -199,11 +205,11 @@ onClick={recalculateAllPrices}
                   {type.replace('-', ' ')}
                 </label>
                 {editingGold ? (
-                  <input
+<input
                     type="number"
                     value={rate}
                     onChange={(e) => handleGoldRateChange(type, e.target.value)}
-                    className="w-32 px-3 py-1 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+                    className="w-full sm:w-32 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-gold-500 focus:border-transparent min-h-[36px]"
                     step="0.01"
                     min="0"
                   />
@@ -232,7 +238,7 @@ onClick={recalculateAllPrices}
               </div>
               
               {canEdit && (
-                <div className="flex gap-2">
+<div className="flex flex-col sm:flex-row gap-2">
                   {editingDiamond ? (
                     <>
                       <Button
@@ -240,6 +246,7 @@ onClick={recalculateAllPrices}
                         variant="outline"
                         size="sm"
                         disabled={updating}
+                        className="w-full sm:w-auto min-h-[36px]"
                       >
                         Cancel
                       </Button>
@@ -247,6 +254,7 @@ onClick={recalculateAllPrices}
                         onClick={updateDiamondRates}
                         size="sm"
                         disabled={updating}
+                        className="w-full sm:w-auto min-h-[36px]"
                       >
                         {updating ? "Saving..." : "Save"}
                       </Button>
@@ -256,6 +264,7 @@ onClick={recalculateAllPrices}
                       onClick={() => setEditingDiamond(true)}
                       variant="outline"
                       size="sm"
+                      className="w-full sm:w-auto min-h-[36px]"
                     >
                       <ApperIcon name="Edit" size={14} />
                       Edit
@@ -273,11 +282,11 @@ onClick={recalculateAllPrices}
                   {type.replace('-', ' ')}
                 </label>
                 {editingDiamond ? (
-                  <input
+<input
                     type="number"
                     value={rate}
                     onChange={(e) => handleDiamondRateChange(type, e.target.value)}
-                    className="w-32 px-3 py-1 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full sm:w-32 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[36px]"
                     step="0.01"
                     min="0"
                   />
@@ -307,20 +316,22 @@ onClick={recalculateAllPrices}
               </div>
             </div>
             {canEdit && (
-              <Button
+<Button
                 onClick={recalculateAllPrices}
                 disabled={updating}
-                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 w-full sm:w-auto min-h-[44px]"
               >
                 {updating ? (
                   <>
                     <ApperIcon name="Loader" size={16} className="animate-spin" />
-                    Updating...
+                    <span className="hidden sm:inline">Updating...</span>
+                    <span className="sm:hidden">Updating</span>
                   </>
                 ) : (
                   <>
                     <ApperIcon name="Calculator" size={16} />
-                    Recalculate All Prices
+                    <span className="hidden sm:inline">Recalculate All Prices</span>
+                    <span className="sm:hidden">Recalculate</span>
                   </>
                 )}
               </Button>

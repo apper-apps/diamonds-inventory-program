@@ -28,14 +28,14 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
 // Enhanced camera device selection with fallback
   const getAvailableCamera = async () => {
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
+const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(device => device.kind === 'videoinput');
       
       if (videoDevices.length === 0) {
         throw new Error('No camera devices found');
       }
       
-      // Prefer rear camera (environment facing)
+      // Prefer rear camera (environment facing) for mobile
       const rearCamera = videoDevices.find(device => 
         device.label.toLowerCase().includes('back') ||
         device.label.toLowerCase().includes('rear') ||
@@ -48,8 +48,7 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
       return null;
     }
   };
-
-  const startScanning = async (retryCount = 0) => {
+const startScanning = async (retryCount = 0) => {
     try {
       setError(null);
       setScanning(true);
@@ -57,10 +56,10 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
       // Try to get optimal camera device
       const preferredDeviceId = await getAvailableCamera();
       
-      // Configure video constraints with device preference
+      // Configure video constraints optimized for mobile
       const videoConstraints = {
-        width: { ideal: 1280, min: 640 },
-        height: { ideal: 720, min: 480 },
+        width: { ideal: window.innerWidth < 768 ? 640 : 1280, min: 320 },
+        height: { ideal: window.innerWidth < 768 ? 480 : 720, min: 240 },
         facingMode: preferredDeviceId ? undefined : 'environment'
       };
       
@@ -81,9 +80,13 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
           return startScanning(1); // Retry once without device preference
         }
         
-        // Final fallback: basic video request
+        // Final fallback: basic video request for mobile compatibility
         stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: { ideal: 'environment' } }
+          video: { 
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          }
         });
       }
       
@@ -106,7 +109,7 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
       const actualDeviceId = track.getSettings().deviceId;
 
       // Start decoding with enhanced error handling
-      codeReader.current.decodeFromVideoDevice(
+codeReader.current.decodeFromVideoDevice(
         actualDeviceId || undefined,
         videoRef.current,
         (result, error) => {
@@ -145,7 +148,7 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
   };
 
   const stopScanning = () => {
-    // Enhanced cleanup with proper resource disposal
+// Enhanced cleanup with proper resource disposal
     try {
       // Stop and dispose of code reader
       if (codeReader.current) {
@@ -153,7 +156,7 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
         codeReader.current = null;
       }
       
-      // Stop video tracks
+      // Stop video tracks with mobile compatibility
       if (videoRef.current && videoRef.current.srcObject) {
         const tracks = videoRef.current.srcObject.getTracks();
         tracks.forEach(track => {
@@ -184,25 +187,25 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
 
   return (
     <AnimatePresence>
-      <motion.div
+<motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-2 sm:p-4"
         onClick={handleClose}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-white rounded-2xl overflow-hidden w-full max-w-md mx-auto"
+          className="bg-white rounded-2xl overflow-hidden w-full max-w-md mx-auto max-h-[90vh]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+<div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Scan Barcode</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">Scan Barcode</h2>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">
                 Point camera at product barcode
               </p>
             </div>
@@ -216,8 +219,8 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
             </Button>
           </div>
 
-          {/* Scanner Content */}
-          <div className="p-6">
+{/* Scanner Content */}
+          <div className="p-3 sm:p-6">
             {error ? (
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -253,22 +256,22 @@ const BarcodeScanner = ({ isOpen, onClose, onScan }) => {
                     className="w-full h-full object-cover"
                   />
                   
-                  {/* Scanner Overlay */}
+                  {/* Scanner Overlay - Responsive */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-48 h-32 border-2 border-white border-dashed rounded-lg bg-transparent">
-                      <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-gold-400 rounded-tl-lg"></div>
-                      <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-gold-400 rounded-tr-lg"></div>
-                      <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-gold-400 rounded-bl-lg"></div>
-                      <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-gold-400 rounded-br-lg"></div>
+                    <div className="w-40 h-28 sm:w-48 sm:h-32 border-2 border-white border-dashed rounded-lg bg-transparent">
+                      <div className="absolute top-0 left-0 w-4 h-4 sm:w-6 sm:h-6 border-t-4 border-l-4 border-gold-400 rounded-tl-lg"></div>
+                      <div className="absolute top-0 right-0 w-4 h-4 sm:w-6 sm:h-6 border-t-4 border-r-4 border-gold-400 rounded-tr-lg"></div>
+                      <div className="absolute bottom-0 left-0 w-4 h-4 sm:w-6 sm:h-6 border-b-4 border-l-4 border-gold-400 rounded-bl-lg"></div>
+                      <div className="absolute bottom-0 right-0 w-4 h-4 sm:w-6 sm:h-6 border-b-4 border-r-4 border-gold-400 rounded-br-lg"></div>
                     </div>
                   </div>
 
                   {/* Scanning indicator */}
                   {scanning && (
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-                      <div className="flex items-center space-x-2 bg-black bg-opacity-50 text-white px-3 py-2 rounded-full">
+                    <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2">
+                      <div className="flex items-center space-x-2 bg-black bg-opacity-50 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-full">
                         <div className="w-2 h-2 bg-gold-400 rounded-full animate-pulse"></div>
-                        <span className="text-sm">Scanning...</span>
+                        <span className="text-xs sm:text-sm">Scanning...</span>
                       </div>
                     </div>
                   )}

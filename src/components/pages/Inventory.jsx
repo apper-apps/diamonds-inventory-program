@@ -69,20 +69,25 @@ const [editingProduct, setEditingProduct] = useState(null);
   const handleAddProduct = async (productData) => {
     try {
       // Calculate price using pricing service
-      const calculatedPrice = pricingService.calculateProductPrice(
-        productData.goldType,
-        productData.diamondType,
-        parseFloat(productData.weight) || 0,
-        parseFloat(productData.diamondWeight) || 0,
-        productData.diamondQuality || 'SI',
-        productData.diamondColor || 'F-G'
-      );
+try {
+        const calculatedPrice = pricingService.calculateProductPrice(
+          productData.goldType,
+          productData.diamondType,
+          parseFloat(productData.weight) || 0,
+          parseFloat(productData.diamondWeight) || 0,
+          productData.diamondQuality || 'SI',
+          productData.diamondColor || 'F-G'
+        );
+        productData.price = calculatedPrice;
+      } catch (error) {
+        console.warn('Price calculation failed:', error);
+      }
 
-      const newProduct = await productService.create({
+const newProduct = await productService.create({
         ...productData,
         weight: parseFloat(productData.weight),
         diamondWeight: parseFloat(productData.diamondWeight) || 0,
-        price: calculatedPrice
+        price: productData.price
       });
 
       setProducts(prev => [...prev, newProduct]);
@@ -215,37 +220,40 @@ const updatedProduct = await productService.update(editingProduct.Id, {
       >
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex flex-col md:flex-row gap-4 flex-1">
-            <div className="flex-1">
-              <SearchBar
-                value={searchTerm}
-                onChange={setSearchTerm}
-                placeholder="Search products, barcodes, or descriptions..."
-                className="w-full"
-              />
-            </div>
-            
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            >
-              <option value="">All Categories</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
+<div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <SearchBar
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="Search products, barcodes..."
+                  className="w-full"
+                />
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[44px] w-full sm:w-auto"
+                >
+                  <option value="">All Categories</option>
+                  {categories.map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
 
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            >
-              <option value="">All Status</option>
-              <option value="Available">Available</option>
-              <option value="Reserved">Reserved</option>
-              <option value="Sold">Sold</option>
-            </select>
-          </div>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[44px] w-full sm:w-auto"
+                >
+                  <option value="">All Status</option>
+                  <option value="Available">Available</option>
+                  <option value="Reserved">Reserved</option>
+                  <option value="Sold">Sold</option>
+                </select>
+              </div>
+            </div>
 
           <Button
             onClick={() => setShowAddModal(true)}

@@ -5,7 +5,8 @@ import Button from "@/components/atoms/Button";
 
 const Header = ({ onMenuToggle }) => {
   const location = useLocation();
-const navigate = useNavigate();
+  const navigate = useNavigate();
+
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === "/") return "Dashboard";
@@ -52,7 +53,7 @@ const navigate = useNavigate();
             Notifications
           </Button>
           
-          <Button 
+<Button 
             variant="outline" 
             size="sm" 
             onClick={async () => {
@@ -61,7 +62,14 @@ const navigate = useNavigate();
                 await ApperUI.logout();
                 navigate('/login');
               } catch (error) {
-                console.error("Logout failed:", error);
+                console.error('Logout error:', error);
+                try {
+                  await ApperUI.logout();
+                  navigate('/login');
+                } catch (fallbackError) {
+                  console.error("Logout failed:", fallbackError);
+                  navigate('/login');
+                }
               }
             }}
             className="flex items-center"

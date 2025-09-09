@@ -55,7 +55,7 @@ export const customerService = {
       console.error("Error fetching customers:", error?.response?.data?.message || error.message);
       return [];
     }
-  },
+},
 
   async getById(id) {
     try {
@@ -98,7 +98,7 @@ export const customerService = {
       console.error("Error fetching customer:", error?.response?.data?.message || error.message);
       throw error;
     }
-  },
+},
 
   async create(customerData) {
     try {
@@ -164,7 +164,7 @@ export const customerService = {
     }
   },
 
-  async update(id, customerData) {
+async update(id, customerData) {
     try {
       await delay(350);
       const apperClient = getApperClient();
@@ -228,7 +228,7 @@ export const customerService = {
     }
   },
 
-  async delete(id) {
+async delete(id) {
     try {
       await delay(300);
       const apperClient = getApperClient();
@@ -263,10 +263,10 @@ export const customerService = {
     }
   },
 
-  async search(query) {
+async search(query) {
     try {
       await delay(200);
-      if (!query) {
+      if (!query?.trim()) {
         return this.getAll();
       }
       
@@ -345,9 +345,13 @@ export const customerService = {
     }
   },
 
-  async getByGST(gstNumber) {
+async getByGST(gstNumber) {
     try {
       await delay(200);
+      if (!gstNumber?.trim()) {
+        return null;
+      }
+      
       const apperClient = getApperClient();
       
       const params = {

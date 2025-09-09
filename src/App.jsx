@@ -23,7 +23,7 @@ import Sales from "@/components/pages/Sales";
 export const AuthContext = createContext(null);
 
 function App() {
-  const navigate = useNavigate();
+const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isInitialized, setIsInitialized] = useState(false);
   
@@ -41,7 +41,7 @@ function App() {
     });
     
     // Initialize but don't show login yet
-    ApperUI.setup(client, {
+ApperUI.setup(client, {
       target: '#authentication',
       clientId: import.meta.env.VITE_APPER_PROJECT_ID,
       view: 'both',
@@ -100,7 +100,7 @@ function App() {
         console.error("Authentication failed:", error);
       }
     });
-  }, []);// No props and state should be bound
+}, [navigate, dispatch]);// No props and state should be bound
   
   // Authentication methods to share via context
   const authMethods = {

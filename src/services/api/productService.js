@@ -1,5 +1,4 @@
-import React from "react";
-import Error from "@/components/ui/Error";
+// Product service using ApperClient for database operations
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Initialize ApperClient
@@ -57,11 +56,11 @@ export const productService = {
         diamondQuality: item.diamond_quality_c || '',
         diamondColor: item.diamond_color_c || '',
         certificateNumber: item.certificate_number_c || '',
-        weight: item.weight_c || 0,
-        diamondWeight: item.diamond_weight_c || 0,
+        weight: parseFloat(item.weight_c) || 0,
+        diamondWeight: parseFloat(item.diamond_weight_c) || 0,
         dimensions: item.dimensions_c || '',
         specifications: item.specifications_c || '',
-        price: item.price_c || 0,
+        price: parseFloat(item.price_c) || 0,
         description: item.description_c || '',
         status: item.status_c || 'Available',
         barcode: item.barcode_c || '',
@@ -76,7 +75,7 @@ export const productService = {
     }
   },
 
-  async getById(id) {
+async getById(id) {
     try {
       await delay(200);
       const apperClient = getApperClient();
@@ -118,11 +117,11 @@ export const productService = {
         diamondQuality: item.diamond_quality_c || '',
         diamondColor: item.diamond_color_c || '',
         certificateNumber: item.certificate_number_c || '',
-        weight: item.weight_c || 0,
-        diamondWeight: item.diamond_weight_c || 0,
+        weight: parseFloat(item.weight_c) || 0,
+        diamondWeight: parseFloat(item.diamond_weight_c) || 0,
         dimensions: item.dimensions_c || '',
         specifications: item.specifications_c || '',
-        price: item.price_c || 0,
+        price: parseFloat(item.price_c) || 0,
         description: item.description_c || '',
         status: item.status_c || 'Available',
         barcode: item.barcode_c || '',
@@ -135,7 +134,7 @@ export const productService = {
     }
   },
 
-  async getByBarcode(barcode) {
+async getByBarcode(barcode) {
     try {
       await delay(200);
       const apperClient = getApperClient();
@@ -169,7 +168,7 @@ export const productService = {
         Id: item.Id,
         name: item.Name || '',
         category: item.category_c || '',
-        price: item.price_c || 0,
+        price: parseFloat(item.price_c) || 0,
         status: item.status_c || 'Available',
         barcode: item.barcode_c || '',
         description: item.description_c || ''
@@ -181,7 +180,7 @@ export const productService = {
     }
   },
 
-  async create(productData) {
+async create(productData) {
     try {
       await delay(300);
       const apperClient = getApperClient();
@@ -204,7 +203,7 @@ export const productService = {
             description_c: productData.description || '',
             status_c: productData.status || 'Available',
             barcode_c: productData.barcode || '',
-            images_c: productData.images || '',
+            images_c: Array.isArray(productData.images) ? productData.images.join(',') : (productData.images || ''),
             created_at_c: new Date().toISOString().split('T')[0]
           }
         ]
@@ -239,11 +238,11 @@ export const productService = {
             diamondQuality: item.diamond_quality_c || '',
             diamondColor: item.diamond_color_c || '',
             certificateNumber: item.certificate_number_c || '',
-            weight: item.weight_c || 0,
-            diamondWeight: item.diamond_weight_c || 0,
+            weight: parseFloat(item.weight_c) || 0,
+            diamondWeight: parseFloat(item.diamond_weight_c) || 0,
             dimensions: item.dimensions_c || '',
             specifications: item.specifications_c || '',
-            price: item.price_c || 0,
+            price: parseFloat(item.price_c) || 0,
             description: item.description_c || '',
             status: item.status_c || 'Available',
             barcode: item.barcode_c || '',
@@ -260,7 +259,7 @@ export const productService = {
     }
   },
 
-  async update(id, productData) {
+async update(id, productData) {
     try {
       await delay(300);
       const apperClient = getApperClient();
@@ -284,7 +283,7 @@ export const productService = {
             description_c: productData.description || '',
             status_c: productData.status || 'Available',
             barcode_c: productData.barcode || '',
-            images_c: productData.images || ''
+            images_c: Array.isArray(productData.images) ? productData.images.join(',') : (productData.images || '')
           }
         ]
       };
@@ -318,11 +317,11 @@ export const productService = {
             diamondQuality: item.diamond_quality_c || '',
             diamondColor: item.diamond_color_c || '',
             certificateNumber: item.certificate_number_c || '',
-            weight: item.weight_c || 0,
-            diamondWeight: item.diamond_weight_c || 0,
+            weight: parseFloat(item.weight_c) || 0,
+            diamondWeight: parseFloat(item.diamond_weight_c) || 0,
             dimensions: item.dimensions_c || '',
             specifications: item.specifications_c || '',
-            price: item.price_c || 0,
+            price: parseFloat(item.price_c) || 0,
             description: item.description_c || '',
             status: item.status_c || 'Available',
             barcode: item.barcode_c || '',
@@ -339,7 +338,7 @@ export const productService = {
     }
   },
 
-  async delete(id) {
+async delete(id) {
     try {
       await delay(300);
       const apperClient = getApperClient();
@@ -372,7 +371,7 @@ export const productService = {
       console.error("Error deleting product:", error?.response?.data?.message || error.message);
       throw error;
     }
-  },
+},
 
   async updateInventoryStatus(id, status) {
     return this.update(id, { status });
@@ -385,6 +384,6 @@ export const productService = {
       success: true,
       message: "Price recalculation completed",
       updatedCount: 0
-};
+    };
   }
 };

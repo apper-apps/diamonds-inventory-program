@@ -4,14 +4,14 @@ import { toast } from "react-toastify";
 import { productService } from "@/services/api/productService";
 import { customerService } from "@/services/api/customerService";
 import { salesService } from "@/services/api/salesService";
-import InvoiceModal from "@/components/organisms/InvoiceModal";
-import CustomerModal from "@/components/organisms/CustomerModal";
 import ApperIcon from "@/components/ApperIcon";
 import Error from "@/components/ui/Error";
 import Loading from "@/components/ui/Loading";
 import SearchBar from "@/components/molecules/SearchBar";
 import Button from "@/components/atoms/Button";
 import BarcodeScanner from "@/components/organisms/BarcodeScanner";
+import InvoiceModal from "@/components/organisms/InvoiceModal";
+import CustomerModal from "@/components/organisms/CustomerModal";
 import Products from "@/components/pages/Products";
 
 const Sales = () => {
@@ -204,8 +204,9 @@ const saleData = {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
+className="flex flex-col gap-4"
       >
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-900 to-gold-600 bg-clip-text text-transparent">
             Point of Sale
@@ -231,12 +232,13 @@ const saleData = {
           >
             <ApperIcon name="UserPlus" size={16} />
             <span className="hidden sm:inline">Add Customer</span>
-          </Button>
+</Button>
         </div>
+      </div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Products Section */}
+        {/* Products Section */
         <div className="lg:col-span-2 space-y-4">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
             <div className="p-6 border-b border-gray-100">
@@ -249,7 +251,7 @@ const saleData = {
             </div>
             
             <div className="p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+<div className="grid grid-cols-1 gap-4 max-h-80 sm:max-h-96 overflow-y-auto">
                 {filteredProducts.map((product) => (
                   <motion.div
                     key={product.Id}
@@ -310,7 +312,7 @@ const saleData = {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3">
+<div className="space-y-3 max-h-60 sm:max-h-80 overflow-y-auto">
                   <SearchBar
                     placeholder="Search customers..."
                     value={customerSearchTerm}
@@ -360,7 +362,7 @@ const saleData = {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="max-h-64 overflow-y-auto space-y-3">
+<div className="max-h-48 sm:max-h-64 overflow-y-auto space-y-3">
                     {cart.map((item) => (
                       <div key={item.Id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                         <div className="flex-1 min-w-0">

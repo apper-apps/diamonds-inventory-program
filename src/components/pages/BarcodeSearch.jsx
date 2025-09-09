@@ -71,22 +71,22 @@ const BarcodeSearch = () => {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+<div className="p-4 sm:p-6 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Barcode Search</h1>
-        <p className="text-gray-600">Search for products by scanning or entering barcode manually</p>
+<div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Barcode Search</h1>
+        <p className="text-gray-600 text-sm sm:text-base">Search for products by scanning or entering barcode manually</p>
       </div>
 
       {/* Search Section */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-6">
+<div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mb-6">
         <div className="space-y-4">
           {/* Manual Entry */}
           <div>
             <Label htmlFor="barcode-input" className="text-sm font-medium text-gray-700 mb-2">
               Enter Barcode Number
             </Label>
-            <div className="flex gap-3">
+<div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1">
                 <Input
                   id="barcode-input"
@@ -98,10 +98,10 @@ const BarcodeSearch = () => {
                   className="font-mono"
                 />
               </div>
-              <Button 
+<Button 
                 onClick={handleManualSearch}
                 disabled={loading}
-                className="px-6"
+                className="px-4 sm:px-6 w-full sm:w-auto min-h-[44px]"
               >
                 <ApperIcon name="Search" className="w-4 h-4 mr-2" />
                 Search
@@ -122,7 +122,7 @@ const BarcodeSearch = () => {
               variant="outline"
               onClick={() => setScannerOpen(true)}
               disabled={loading}
-              className="inline-flex items-center"
+className="inline-flex items-center w-full sm:w-auto min-h-[44px]"
             >
               <ApperIcon name="Camera" className="w-5 h-5 mr-2" />
               Scan Barcode with Camera
@@ -133,23 +133,23 @@ const BarcodeSearch = () => {
 
       {/* Loading State */}
       {loading && (
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+<div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-8">
           <Loading message="Searching for product..." />
         </div>
       )}
 
       {/* Product Details */}
-      {!loading && product && (
+{!loading && product && (
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-          {/* Product Header */}
-          <div className="bg-gradient-to-r from-gold-50 to-gold-100 p-6 border-b border-gray-200">
-            <div className="flex items-start justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h2>
-                <p className="text-gray-600">{product.description}</p>
+{/* Product Header */}
+          <div className="bg-gradient-to-r from-gold-50 to-gold-100 p-4 sm:p-6 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+              <div className="flex-1">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{product.name}</h2>
+                <p className="text-gray-600 text-sm sm:text-base">{product.description}</p>
               </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold bg-gradient-to-r from-gold-600 to-gold-800 bg-clip-text text-transparent">
+              <div className="text-center sm:text-right">
+                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gold-600 to-gold-800 bg-clip-text text-transparent">
                   {formatPrice(product.price)}
                 </div>
                 <div className="text-sm text-gray-500 mt-1">Price</div>
@@ -161,7 +161,7 @@ const BarcodeSearch = () => {
           <div className="p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Product Specifications</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Basic Info */}
               <div className="space-y-3">
                 <h4 className="font-medium text-gray-700 border-b border-gray-200 pb-2">Basic Information</h4>
@@ -243,13 +243,13 @@ const BarcodeSearch = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-            <div className="flex gap-3 justify-end">
-              <Button variant="outline" onClick={() => window.location.href = '/products'}>
+<div className="bg-gray-50 px-4 sm:px-6 py-4 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-3 justify-end">
+              <Button variant="outline" onClick={() => window.location.href = '/products'} className="w-full sm:w-auto min-h-[44px]">
                 <ApperIcon name="Eye" className="w-4 h-4 mr-2" />
                 View in Products
               </Button>
-              <Button onClick={handleAddToSale}>
+              <Button onClick={handleAddToSale} className="w-full sm:w-auto min-h-[44px]">
                 <ApperIcon name="ShoppingCart" className="w-4 h-4 mr-2" />
                 Add to Sale
               </Button>
@@ -260,13 +260,13 @@ const BarcodeSearch = () => {
 
       {/* No Results */}
       {!loading && searchAttempted && !product && (
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8 text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ApperIcon name="Search" className="w-8 h-8 text-gray-400" />
+<div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-8 text-center">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ApperIcon name="Search" className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Product Not Found</h3>
-          <p className="text-gray-600 mb-4">No product found with the entered barcode.</p>
-          <p className="text-sm text-gray-500">Please check the barcode and try again.</p>
+          <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Product Not Found</h3>
+          <p className="text-gray-600 mb-4 text-sm sm:text-base">No product found with the entered barcode.</p>
+          <p className="text-xs sm:text-sm text-gray-500">Please check the barcode and try again.</p>
         </div>
       )}
 
