@@ -23,7 +23,24 @@ const [products, setProducts] = useState([]);
     loadProducts();
   }, []);
 
-useEffect(() => {
+const filterProducts = () => {
+    if (!searchTerm) {
+      setFilteredProducts(products);
+      return;
+    }
+
+    const filtered = products.filter(product =>
+product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.barcode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (product.diamondQuality && product.diamondQuality.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (product.certificateNumber && product.certificateNumber.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (product.status && product.status.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    setFilteredProducts(filtered);
+  };
+
+  useEffect(() => {
     filterProducts();
   }, [products, searchTerm, filterProducts]);
 
@@ -81,22 +98,6 @@ const loadProducts = async () => {
     }
   };
 
-const filterProducts = () => {
-    if (!searchTerm) {
-      setFilteredProducts(products);
-      return;
-    }
-
-    const filtered = products.filter(product =>
-product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.barcode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.diamondQuality && product.diamondQuality.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (product.certificateNumber && product.certificateNumber.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (product.status && product.status.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-    setFilteredProducts(filtered);
-  };
 
   const handleAddProduct = async (productData) => {
     try {
