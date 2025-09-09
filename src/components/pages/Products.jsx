@@ -100,18 +100,17 @@ const filterProducts = () => {
     setFilteredProducts(filtered);
   };
 
-  const handleAddProduct = async (productData) => {
+const handleAddProduct = async (productData) => {
     try {
       const newProduct = await productService.create(productData);
       setProducts(prev => [...prev, newProduct]);
       toast.success("Product added successfully!");
     } catch (error) {
       toast.error("Failed to add product");
-      throw error;
+      console.error("Error creating product:", error);
     }
   };
-
-  const handleEditProduct = async (productData) => {
+const handleEditProduct = async (productData) => {
     try {
       const updatedProduct = await productService.update(editProduct.Id, productData);
       setProducts(prev => 
@@ -120,7 +119,7 @@ const filterProducts = () => {
       toast.success("Product updated successfully!");
     } catch (error) {
       toast.error("Failed to update product");
-      throw error;
+      console.error("Error updating product:", error);
     }
   };
 
