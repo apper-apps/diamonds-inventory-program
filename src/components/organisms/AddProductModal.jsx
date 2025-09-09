@@ -23,6 +23,8 @@ const [formData, setFormData] = useState({
     status_c: "Available",
     barcode_c: "",
     images_c: "",
+    making_charge_c: "0",
+    labour_charge_c: "0",
     manualPricing: false
   });
   const [calculatedPrice, setCalculatedPrice] = useState(0);
@@ -52,6 +54,8 @@ setFormData({
           status_c: editProduct.status || "Available",
           barcode_c: editProduct.barcode || "",
           images_c: editProduct.images || "",
+          making_charge_c: editProduct.makingCharge?.toString() || "0",
+          labour_charge_c: editProduct.labourCharge?.toString() || "0",
           manualPricing: false
         });
       } else {
@@ -72,6 +76,8 @@ setFormData({
           status_c: "Available",
           barcode_c: "",
           images_c: "",
+          making_charge_c: "0",
+          labour_charge_c: "0",
           manualPricing: false
         });
         setCalculatedPrice(0);
@@ -105,7 +111,7 @@ const handleChange = async (e) => {
     }
   };
   
-  const calculatePrice = async (data = formData) => {
+const calculatePrice = async (data = formData) => {
     if (data.manualPricing) return;
     
     try {
@@ -114,26 +120,40 @@ const handleChange = async (e) => {
       if (data.gold_type_c && data.weight_c && parseFloat(data.weight_c) > 0) {
         const goldWeight = parseFloat(data.weight_c) || 0;
         const diamondWeight = parseFloat(data.diamond_weight_c) || 0;
+        const makingCharge = parseFloat(data.making_charge_c) || 0;
+        const labourCharge = parseFloat(data.labour_charge_c) || 0;
         
-        const calculatedPrice = pricingService.calculateProductPrice(
+        const calculatedPrice = await pricingService.calculateProductPrice(
           data.gold_type_c,
           data.diamond_type_c || '',
           goldWeight,
           diamondWeight,
           data.diamond_quality_c || 'SI',
-          data.diamond_color_c || 'F-G'
+          data.diamond_color_c || 'F-G',
+          makingCharge,
+          labourCharge
         );
         
         // Calculate breakdown
         const goldRates = await pricingService.getGoldRates();
-        const diamondRates = await pricingService.getDiamondRates();
         const goldCost = goldWeight * (goldRates[data.gold_type_c] || 0);
-        const diamondCost = calculatedPrice - goldCost;
+        
+        let diamondCost = 0;
+        if (diamondWeight > 0 && data.diamond_type_c) {
+          const diamondPrice = await pricingService.getDiamondPriceByCombo(
+            data.diamond_type_c,
+            data.diamond_quality_c || 'SI',
+            data.diamond_color_c || 'F-G'
+          );
+          diamondCost = diamondWeight * (diamondPrice || 0);
+        }
         
         setCalculatedPrice(calculatedPrice);
         setPriceBreakdown({
           gold: goldCost,
           diamond: diamondCost,
+          making: makingCharge,
+          labour: labourCharge,
           total: calculatedPrice
         });
         
@@ -159,11 +179,22 @@ const generateBarcode = () => {
 const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.Name.trim()) newErrors.Name = "Product name is required";
+if (!formData.Name.trim()) newErrors.Name = "Product name is required";
     if (!formData.category_c) newErrors.category_c = "Category is required";
     if (!formData.gold_type_c) newErrors.gold_type_c = "Gold type is required";
     if (!formData.weight_c || parseFloat(formData.weight_c) <= 0) {
       newErrors.weight_c = "Valid gold weight is required";
+    }
+    
+    // Validate making and labour charges
+    const makingCharge = parseFloat(formData.making_charge_c);
+    if (formData.making_charge_c && (isNaN(makingCharge) || makingCharge < 0)) {
+      newErrors.making_charge_c = "Making charge must be a valid positive number";
+    }
+    
+    const labourCharge = parseFloat(formData.labour_charge_c);
+    if (formData.labour_charge_c && (isNaN(labourCharge) || labourCharge < 0)) {
+      newErrors.labour_charge_c = "Labour charge must be a valid positive number";
     }
     
     // For diamonds, require quality and color if diamond weight is provided
@@ -209,7 +240,9 @@ const productData = {
         description_c: formData.description_c,
         status_c: formData.status_c || 'Available',
         barcode_c: formData.barcode_c || generateBarcode(),
-        images_c: formData.images_c || ''
+        images_c: formData.images_c || '',
+        making_charge_c: parseFloat(formData.making_charge_c) || 0,
+        labour_charge_c: parseFloat(formData.labour_charge_c) || 0
       };
 
       await onSubmit(productData);
@@ -380,6 +413,33 @@ const productData = {
                 error={errors.diamond_weight_c}
                 placeholder="0.00"
               />
+</div>
+
+            {/* Making and Labour Charges */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                label="Making Charge (₹)"
+                name="making_charge_c"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.making_charge_c}
+                onChange={handleChange}
+                error={errors.making_charge_c}
+                placeholder="0.00"
+              />
+
+              <FormField
+                label="Labour Charge (₹)"
+                name="labour_charge_c"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.labour_charge_c}
+                onChange={handleChange}
+                error={errors.labour_charge_c}
+                placeholder="0.00"
+              />
             </div>
 
             {/* Pricing Section */}
@@ -407,6 +467,14 @@ const productData = {
                   <div className="flex justify-between">
                     <span>Diamond Cost:</span>
                     <span>₹{priceBreakdown.diamond.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Making Charge:</span>
+                    <span>₹{priceBreakdown.making.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Labour Charge:</span>
+                    <span>₹{priceBreakdown.labour.toLocaleString()}</span>
                   </div>
                   <div className="border-t pt-2 flex justify-between font-medium">
                     <span>Total Price:</span>
@@ -535,73 +603,6 @@ const productData = {
                 )}
               </div>
             </div>
-<FormField
-              label="Dimensions"
-              name="dimensions"
-              value={formData.dimensions}
-              onChange={handleChange}
-              placeholder="e.g., 15mm x 10mm"
-              error={errors.dimensions}
-            />
-
-<FormField
-              label="Specifications"
-              name="specifications"
-              type="textarea"
-              value={formData.specifications}
-              onChange={handleChange}
-              placeholder="Additional specifications (clarity, color grade, etc.)"
-              rows={3}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-<FormField
-                label="Price (₹)"
-                name="price"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.price}
-                onChange={handleChange}
-                placeholder="0.00"
-                error={errors.price}
-                required
-              />
-
-              <FormField
-                label="Status"
-                name="status"
-                type="select"
-                value={formData.status}
-                onChange={handleChange}
-                options={[
-                  { value: "Available", label: "Available" },
-                  { value: "Reserved", label: "Reserved" },
-                  { value: "Sold", label: "Sold" }
-                ]}
-                error={errors.status}
-                required
-              />
-            </div>
-
-            <FormField
-              label="Barcode"
-              name="barcode"
-              value={formData.barcode}
-              onChange={handleChange}
-              placeholder="Leave empty to auto-generate (4CD-XXXXXX)"
-            />
-
-            <FormField
-              label="Description"
-              name="description"
-              type="textarea"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Enter product description"
-              error={errors.description}
-              required
-            />
 
             {/* Actions */}
             <div className="flex space-x-3 pt-4">

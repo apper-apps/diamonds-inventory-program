@@ -44,11 +44,66 @@ const pricingService = {
     return { ...goldRates };
   },
 
-  async getDiamondRates() {
+async getDiamondRates() {
     await delay(300);
     return { ...diamondRates };
   },
 
+  async getDiamondPriceByCombo(diamondType, quality, color) {
+    try {
+      await delay(200);
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+      
+      const params = {
+        fields: [
+          { field: { Name: "per_carat_price_c" } }
+        ],
+        where: [
+          {
+            FieldName: "diamond_type_c",
+            Operator: "EqualTo", 
+            Values: [diamondType]
+          },
+          {
+            FieldName: "diamond_quality_c",
+            Operator: "EqualTo",
+            Values: [quality]
+          },
+          {
+            FieldName: "diamond_color_c",
+            Operator: "EqualTo",
+            Values: [color]
+          }
+        ]
+      };
+      
+      const response = await apperClient.fetchRecords('diamond_price_c', params);
+      
+      if (response.success && response.data && response.data.length > 0) {
+        return response.data[0].per_carat_price_c || 0;
+      }
+      
+      // Fallback to old calculation if no specific combination found
+      const baseDiamondPrice = diamondRates[diamondType] || 0;
+      const qualityMultiplier = diamondQualityMultipliers[quality] || 1.0;
+      const colorMultiplier = diamondColorMultipliers[color] || 1.0;
+      
+      return baseDiamondPrice * qualityMultiplier * colorMultiplier;
+      
+    } catch (error) {
+      console.error('Error fetching diamond combo price:', error);
+      // Fallback to old calculation
+      const baseDiamondPrice = diamondRates[diamondType] || 0;
+      const qualityMultiplier = diamondQualityMultipliers[quality] || 1.0;
+      const colorMultiplier = diamondColorMultipliers[color] || 1.0;
+      
+      return baseDiamondPrice * qualityMultiplier * colorMultiplier;
+    }
+  },
   async getAllRates() {
     await delay(300);
     return {
@@ -75,17 +130,18 @@ const pricingService = {
     return { ...diamondRates };
   },
 // Calculate product price based on specifications
-  calculateProductPrice(goldType, diamondType, weight, diamondWeight = 0, diamondQuality = 'SI', diamondColor = 'F-G') {
+async calculateProductPrice(goldType, diamondType, weight, diamondWeight = 0, diamondQuality = 'SI', diamondColor = 'F-G', makingCharge = 0, labourCharge = 0) {
     const goldPrice = goldRates[goldType] || 0;
-    const baseDiamondPrice = diamondRates[diamondType] || 0;
-    const qualityMultiplier = diamondQualityMultipliers[diamondQuality] || 1.0;
-    const colorMultiplier = diamondColorMultipliers[diamondColor] || 1.0;
-    
     const goldCost = weight * goldPrice;
-    const diamondPrice = baseDiamondPrice * qualityMultiplier * colorMultiplier;
-    const diamondCost = diamondWeight * diamondPrice;
     
-    return Math.round(goldCost + diamondCost);
+    let diamondCost = 0;
+    if (diamondWeight > 0 && diamondType) {
+      const diamondPrice = await this.getDiamondPriceByCombo(diamondType, diamondQuality, diamondColor);
+      diamondCost = diamondWeight * diamondPrice;
+    }
+    
+    const totalPrice = goldCost + diamondCost + makingCharge + labourCharge;
+    return Math.round(totalPrice);
   },
 
   // Recalculate all product prices (this would integrate with productService)

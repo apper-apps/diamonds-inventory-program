@@ -218,7 +218,7 @@ onClick={recalculateAllPrices}
           </div>
         </div>
 
-{/* Diamond Rates Card */}
+{/* Diamond Combination Pricing Card */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
@@ -227,8 +227,8 @@ onClick={recalculateAllPrices}
                   <ApperIcon name="Gem" size={20} className="text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Diamond Rates</h3>
-                  <p className="text-sm text-gray-500">Per carat in INR by Type, Quality & Color</p>
+                  <h3 className="text-lg font-semibold text-gray-900">Diamond Combination Pricing</h3>
+                  <p className="text-sm text-gray-500">Individual prices per carat for each Type, Quality & Color combination</p>
                 </div>
               </div>
               
@@ -259,7 +259,7 @@ onClick={recalculateAllPrices}
                       size="sm"
                     >
                       <ApperIcon name="Edit" size={14} />
-                      Edit
+                      Edit Combinations
                     </Button>
                   )}
                 </div>
@@ -268,63 +268,54 @@ onClick={recalculateAllPrices}
           </div>
           
           <div className="p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Base Diamond Type Rates */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-gray-700">Base Diamond Type Rates</h4>
-                {Object.entries(diamondRates).filter(([key]) => !key.includes('_')).map(([type, rate]) => (
-                  <div key={type} className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-600 capitalize">
-                      {type.replace('-', ' ')}
-                    </label>
-                    {editingDiamond ? (
-                      <input
-                        type="number"
-                        value={rate}
-                        onChange={(e) => handleDiamondRateChange(type, '', '', e.target.value)}
-                        className="w-32 px-3 py-1 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        step="1000"
-                        min="0"
-                      />
-                    ) : (
-                      <span className="text-sm font-semibold text-gray-900">
-                        ₹{rate.toLocaleString()}
-                      </span>
+            <div className="space-y-6">
+              {/* Diamond Types */}
+              {['round-brilliant', 'marquise', 'princess', 'baguette'].map(type => (
+                <div key={type} className="space-y-4">
+                  <h4 className="text-sm font-medium text-gray-700 capitalize border-b pb-2">
+                    {type.replace('-', ' ')} Diamond
+                  </h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Quality and Color Combinations */}
+                    {['SI', 'VS-SI', 'VS', 'VS-VVS', 'VVS', 'IF'].map(quality =>
+                      ['F-G', 'G-H', 'E-F'].map(color => {
+                        const key = `${type}_${quality}_${color}`;
+                        return (
+                          <div key={key} className="p-3 bg-gray-50 rounded-lg">
+                            <div className="text-xs font-medium text-gray-600 mb-2">
+                              {quality} • {color} Grade
+                            </div>
+                            {editingDiamond ? (
+                              <input
+                                type="number"
+                                value={diamondRates[key] || 0}
+                                onChange={(e) => handleDiamondRateChange(type, quality, color, e.target.value)}
+                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                step="1000"
+                                min="0"
+                                placeholder="Price per carat"
+                              />
+                            ) : (
+                              <div className="text-sm font-semibold text-gray-900">
+                                ₹{(diamondRates[key] || 0).toLocaleString()}/carat
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })
                     )}
                   </div>
-                ))}
-              </div>
-
-              {/* Quality & Color Multipliers Info */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-gray-700">Quality & Color Multipliers</h4>
-                
-                <div className="space-y-3">
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">Diamond Quality</div>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="flex justify-between"><span>SI:</span><span>1.0x</span></div>
-                    <div className="flex justify-between"><span>VS-SI:</span><span>1.2x</span></div>
-                    <div className="flex justify-between"><span>VS:</span><span>1.4x</span></div>
-                    <div className="flex justify-between"><span>VS-VVS:</span><span>1.6x</span></div>
-                    <div className="flex justify-between"><span>VVS:</span><span>1.8x</span></div>
-                    <div className="flex justify-between"><span>IF:</span><span>2.2x</span></div>
-                  </div>
                 </div>
-
-                <div className="space-y-3">
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">Diamond Color</div>
-                  <div className="grid grid-cols-1 gap-2 text-sm">
-                    <div className="flex justify-between"><span>F-G Grade:</span><span>1.0x</span></div>
-                    <div className="flex justify-between"><span>G-H Grade:</span><span>0.9x</span></div>
-                    <div className="flex justify-between"><span>E-F Grade:</span><span>1.3x</span></div>
-                  </div>
+              ))}
+              
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <div className="text-sm text-blue-800 font-medium mb-2">Price Calculation Formula</div>
+                <div className="text-sm text-blue-700">
+                  Final Price = (Gold Weight × Gold Rate) + (Diamond Weight × Combination Price) + Making Charge + Labour Charge
                 </div>
-
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                  <div className="text-xs text-blue-800 font-medium">Price Calculation</div>
-                  <div className="text-xs text-blue-700 mt-1">
-                    Final Price = (Gold Weight × Gold Rate) + (Diamond Weight × Base Diamond Rate × Quality Multiplier × Color Multiplier)
-                  </div>
+                <div className="text-xs text-blue-600 mt-1">
+                  Each diamond type, quality, and color combination has its own specific per-carat price.
                 </div>
               </div>
             </div>
