@@ -277,11 +277,11 @@ return (
                           addToCart(product);
                         }}
                       >
-                        Add
+Add
                       </Button>
                     </div>
                   </motion.div>
-))}
+                ))}
               </div>
             </div>
           </div>
