@@ -67,8 +67,7 @@ const navigation = [
 className="lg:hidden fixed inset-0 z-50"
       >
         <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
-        <div className="relative w-80 bg-primary-900 h-full shadow-2xl overflow-y-auto"
-      >
+        <div className="relative w-80 bg-primary-900 h-full shadow-2xl overflow-y-auto">
         <div className="flex flex-col h-full">
           {/* Header with close button */}
           <div className="flex items-center justify-between px-6 py-6 border-b border-primary-800">
@@ -98,6 +97,7 @@ className="lg:hidden fixed inset-0 z-50"
             ))}
           </nav>
         </div>
+</div>
       </motion.div>
     </>
   );

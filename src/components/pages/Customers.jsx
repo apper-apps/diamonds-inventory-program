@@ -298,9 +298,9 @@ className="flex flex-col gap-4"
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+transition={{ duration: 0.5, delay: 0.4 }}
         className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-</div>
+      >
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           <div className="flex-1">
             <SearchBar

@@ -263,6 +263,7 @@ const updatedProduct = await productService.update(editingProduct.Id, {
             Add Product
           </Button>
         </div>
+</div>
       </motion.div>
 
       {/* Products List */}
