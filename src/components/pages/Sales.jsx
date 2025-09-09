@@ -34,7 +34,6 @@ const Sales = () => {
   // Load initial data
   useEffect(() => {
     loadData();
-  }, []);
 }, []);
 
   const loadData = async () => {
@@ -63,11 +62,11 @@ const Sales = () => {
   );
 
   // Filter customers based on search
-  const filteredCustomers = customers.filter(customer =>
+const filteredCustomers = customers.filter(customer =>
     customer.name?.toLowerCase().includes(customerSearchTerm.toLowerCase()) ||
     customer.email?.toLowerCase().includes(customerSearchTerm.toLowerCase()) ||
     customer.phone?.toLowerCase().includes(customerSearchTerm.toLowerCase())
-
+  );
   // Barcode scanner
   const handleBarcodeScan = async (barcode) => {
     try {
@@ -282,7 +281,7 @@ return (
                       </Button>
                     </div>
                   </motion.div>
-                ))}
+))}
               </div>
             </div>
           </div>
