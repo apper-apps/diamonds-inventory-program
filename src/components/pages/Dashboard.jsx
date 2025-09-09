@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import StatCard from "@/components/molecules/StatCard";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
 import { dashboardService } from "@/services/api/dashboardService";
+import ApperIcon from "@/components/ApperIcon";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
 import Icon from "@/components/ui/Icon";
+import StatCard from "@/components/molecules/StatCard";
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
@@ -81,7 +82,7 @@ value={stats?.lowStockItems?.toLocaleString('en-IN') || "0"}
         <StatCard
           title="Recent Sales"
           value={stats?.recentSales?.toString() || "0"}
-          icon="TrendingUp"
+icon="TrendingUp"
           subtitle="Last 7 days"
           gradient="from-gold-500 to-gold-600"
           delay={0.4}

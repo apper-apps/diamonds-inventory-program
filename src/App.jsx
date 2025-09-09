@@ -1,14 +1,13 @@
 import React, { createContext, useEffect, useState } from "react";
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
-import { clearUser, setUser } from "./store/userSlice";
+import { clearUser, setUser } from "@/store/userSlice";
+import Layout from "@/components/organisms/Layout";
 import Signup from "@/components/pages/Signup";
 import Callback from "@/components/pages/Callback";
-import ErrorPage from "@/components/pages/ErrorPage";
 import ResetPassword from "@/components/pages/ResetPassword";
-import PromptPassword from "@/components/pages/PromptPassword";
-import Layout from "@/components/organisms/Layout";
+import ErrorPage from "@/components/pages/ErrorPage";
 import Inventory from "@/components/pages/Inventory";
 import Dashboard from "@/components/pages/Dashboard";
 import Pricing from "@/components/pages/Pricing";
@@ -17,6 +16,7 @@ import Customers from "@/components/pages/Customers";
 import Products from "@/components/pages/Products";
 import BarcodeSearch from "@/components/pages/BarcodeSearch";
 import Reports from "@/components/pages/Reports";
+import PromptPassword from "@/components/pages/PromptPassword";
 import Sales from "@/components/pages/Sales";
 
 // Create auth context
@@ -41,7 +41,7 @@ const navigate = useNavigate();
     });
     
     // Initialize but don't show login yet
-ApperUI.setup(client, {
+    ApperUI.setup(client, {
       target: '#authentication',
       clientId: import.meta.env.VITE_APPER_PROJECT_ID,
       view: 'both',
@@ -100,7 +100,7 @@ ApperUI.setup(client, {
         console.error("Authentication failed:", error);
       }
     });
-}, [navigate, dispatch]);// No props and state should be bound
+}, [navigate, dispatch]);
   
   // Authentication methods to share via context
   const authMethods = {
@@ -119,10 +119,10 @@ ApperUI.setup(client, {
   
   // Don't render routes until initialization is complete
   if (!isInitialized) {
-    return <div className="loading flex items-center justify-center p-6 h-full w-full"><svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4"></path><path d="m16.2 7.8 2.9-2.9"></path><path d="M18 12h4"></path><path d="m16.2 16.2 2.9 2.9"></path><path d="M12 18v4"></path><path d="m4.9 19.1 2.9-2.9"></path><path d="M2 12h4"></path><path d="m4.9 4.9 2.9 2.9"></path></svg></div>;
+    return <div className="loading flex items-center justify-center p-6 h-full w-full"><svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><path d="M12 2v4"></path><path d="m16.2 7.8 2.9-2.9"></path><path d="M18 12h4"></path><path d="m16.2 16.2 2.9 2.9"></path><path d="M12 18v4"></path><path d="m4.9 19.1 2.9-2.9"></path><path d="M2 12h4"></path><path d="m4.9 4.9 2.9 2.9"></path></svg></div>;
   }
   
-  return (
+return (
     <AuthContext.Provider value={authMethods}>
       <Routes>
         <Route path="/login" element={<Login />} />

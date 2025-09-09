@@ -30,12 +30,12 @@ const filterProducts = () => {
     }
 
     const filtered = products.filter(product =>
-product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.barcode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.diamondQuality && product.diamondQuality.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (product.certificateNumber && product.certificateNumber.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (product.status && product.status.toLowerCase().includes(searchTerm.toLowerCase()))
+product.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category_c?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.barcode_c?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (product.diamond_quality_c && product.diamond_quality_c.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (product.certificate_number_c && product.certificate_number_c.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (product.status_c && product.status_c.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     setFilteredProducts(filtered);
   };
@@ -52,7 +52,7 @@ const handleBarcodeScan = async (barcode) => {
         // Filter to show the found product
         setSearchTerm(barcode);
 // Show product details with action buttons
-        const productDetails = `📦 ${product.name}\n💰 ₹${product.price?.toLocaleString('en-IN') || 'Price not set'}\n📊 Status: ${product.status || 'Available'}\n🏷️ Category: ${product.category || 'Uncategorized'}`;
+        const productDetails = `📦 ${product.Name}\n💰 ₹${product.price_c?.toLocaleString('en-IN') || 'Price not set'}\n📊 Status: ${product.status_c || 'Available'}\n🏷️ Category: ${product.category_c || 'Uncategorized'}`;
         
         toast.success(
           <div>
@@ -112,9 +112,9 @@ const loadProducts = async () => {
 
   const handleEditProduct = async (productData) => {
     try {
-      const updatedProduct = await productService.update(editProduct.Id, productData);
+const updatedProduct = await productService.update(editProduct.Id, productData);
       setProducts(prev => 
-        prev.map(p => p.Id === editProduct.Id ? updatedProduct : p)
+prev.map(p => p.Id === editProduct.Id ? updatedProduct : p)
       );
       toast.success("Product updated successfully!");
     } catch (error) {
@@ -130,7 +130,7 @@ const loadProducts = async () => {
 
     try {
       await productService.delete(productId);
-      setProducts(prev => prev.filter(p => p.Id !== productId));
+setProducts(prev => prev.filter(p => p.Id !== productId));
       toast.success("Product deleted successfully!");
     } catch (error) {
       toast.error("Failed to delete product");

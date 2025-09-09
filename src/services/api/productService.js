@@ -48,7 +48,7 @@ export const productService = {
       }
       
       return response.data?.map(item => ({
-        Id: item.Id,
+Id: item.Id,
         name: item.Name || '',
         category: item.category_c || '',
         goldType: item.gold_type_c || '',
@@ -109,7 +109,7 @@ async getById(id) {
       
       const item = response.data;
       return {
-        Id: item.Id,
+Id: item.Id,
         name: item.Name || '',
         category: item.category_c || '',
         goldType: item.gold_type_c || '',
@@ -165,7 +165,7 @@ async getByBarcode(barcode) {
       
       const item = response.data[0];
       return {
-        Id: item.Id,
+Id: item.Id,
         name: item.Name || '',
         category: item.category_c || '',
         price: parseFloat(item.price_c) || 0,
@@ -230,7 +230,7 @@ async create(productData) {
         if (successfulRecords.length > 0) {
           const item = successfulRecords[0].data;
           return {
-            Id: item.Id,
+Id: item.Id,
             name: item.Name || '',
             category: item.category_c || '',
             goldType: item.gold_type_c || '',
@@ -267,7 +267,7 @@ async update(id, productData) {
       const params = {
         records: [
           {
-            Id: parseInt(id),
+Id: parseInt(id),
             Name: productData.name || productData.Name,
             category_c: productData.category,
             gold_type_c: productData.goldType,
@@ -308,7 +308,7 @@ async update(id, productData) {
         const successfulRecords = response.results.filter(result => result.success);
         if (successfulRecords.length > 0) {
           const item = successfulRecords[0].data;
-          return {
+return {
             Id: item.Id,
             name: item.Name || '',
             category: item.category_c || '',
@@ -344,7 +344,7 @@ async delete(id) {
       const apperClient = getApperClient();
       
       const params = {
-        RecordIds: [parseInt(id)]
+RecordIds: [parseInt(id)]
       };
       
       const response = await apperClient.deleteRecord('product_c', params);

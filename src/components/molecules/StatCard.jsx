@@ -15,10 +15,10 @@ className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration
           <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1 truncate">{title}</p>
           <p className={`text-xl sm:text-3xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent break-words`}>
             {typeof value === 'string' && value.startsWith('$') ? value.replace('$', '₹') : value}
-          </p>
-<div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0 ml-2 sm:ml-4">
-          <ApperIcon name={icon} className="w-4 h-4 sm:w-6 sm:h-6 text-gray-600" />
-        </div>
+</p>
+          <div className={`w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br ${gradient || 'from-gray-100 to-gray-200'} rounded-xl flex items-center justify-center flex-shrink-0 ml-2 sm:ml-4`}>
+            <ApperIcon name={icon} className={`w-4 h-4 sm:w-6 sm:h-6 ${gradient ? 'text-white' : 'text-gray-600'}`} />
+          </div>
           {subtitle && (
             <p className="text-gray-500 text-sm mt-1">{subtitle}</p>
           )}
