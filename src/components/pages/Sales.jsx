@@ -35,8 +35,9 @@ const Sales = () => {
   useEffect(() => {
     loadData();
   }, []);
+}, []);
 
-const loadData = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -55,18 +56,17 @@ const loadData = async () => {
   };
 
   // Filter products based on search
-const filteredProducts = products.filter(product => 
+  const filteredProducts = products.filter(product => 
     product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.barcode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.category?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Filter customers based on search
-const filteredCustomers = customers.filter(customer =>
+  const filteredCustomers = customers.filter(customer =>
     customer.name?.toLowerCase().includes(customerSearchTerm.toLowerCase()) ||
     customer.email?.toLowerCase().includes(customerSearchTerm.toLowerCase()) ||
     customer.phone?.toLowerCase().includes(customerSearchTerm.toLowerCase())
-  );
 
   // Barcode scanner
   const handleBarcodeScan = async (barcode) => {
@@ -199,43 +199,43 @@ const saleData = {
   if (loading) return <Loading />;
   if (error) return <Error message={error} onRetry={loadData} />;
 
-  return (
+return (
     <div className="space-y-6">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-className="flex flex-col gap-4"
+        className="flex flex-col gap-4"
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-900 to-gold-600 bg-clip-text text-transparent">
-            Point of Sale
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Scan products, manage cart, and generate GST-compliant invoices
-          </p>
-        </div>
-        
-        <div className="flex flex-wrap gap-3">
-          <Button
-            onClick={() => setScannerOpen(true)}
-            className="flex items-center gap-2"
-          >
-            <ApperIcon name="Camera" size={16} />
-            <span className="hidden sm:inline">Scan Barcode</span>
-          </Button>
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-900 to-gold-600 bg-clip-text text-transparent">
+              Point of Sale
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Scan products, manage cart, and generate GST-compliant invoices
+            </p>
+          </div>
           
-          <Button
-            onClick={() => setCustomerModalOpen(true)}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <ApperIcon name="UserPlus" size={16} />
-<span className="hidden sm:inline">Add Customer</span>
-          </Button>
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={() => setScannerOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <ApperIcon name="Camera" size={16} />
+              <span className="hidden sm:inline">Scan Barcode</span>
+            </Button>
+            
+            <Button
+              onClick={() => setCustomerModalOpen(true)}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <ApperIcon name="UserPlus" size={16} />
+              <span className="hidden sm:inline">Add Customer</span>
+            </Button>
+          </div>
         </div>
-      </div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
