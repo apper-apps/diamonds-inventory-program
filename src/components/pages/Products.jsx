@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { productService } from "@/services/api/productService";
-import ApperIcon from "@/components/ApperIcon";
-import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
-import Loading from "@/components/ui/Loading";
-import SearchBar from "@/components/molecules/SearchBar";
 import Button from "@/components/atoms/Button";
-import BarcodeScanner from "@/components/organisms/BarcodeScanner";
+import SearchBar from "@/components/molecules/SearchBar";
 import ProductList from "@/components/organisms/ProductList";
 import AddProductModal from "@/components/organisms/AddProductModal";
+import BarcodeScanner from "@/components/organisms/BarcodeScanner";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import ApperIcon from "@/components/ApperIcon";
+import { productService } from "@/services/api/productService";
 const Products = () => {
 const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -23,26 +23,9 @@ const [products, setProducts] = useState([]);
     loadProducts();
   }, []);
 
-const filterProducts = () => {
-    if (!searchTerm) {
-      setFilteredProducts(products);
-      return;
-    }
-
-    const filtered = products.filter(product =>
-product.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category_c?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.barcode_c?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.diamond_quality_c && product.diamond_quality_c.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (product.certificate_number_c && product.certificate_number_c.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (product.status_c && product.status_c.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-    setFilteredProducts(filtered);
-  };
-
-  useEffect(() => {
+useEffect(() => {
     filterProducts();
-  }, [products, searchTerm, filterProducts]);
+  }, [products, searchTerm]);
 
 const handleBarcodeScan = async (barcode) => {
     setIsScannerOpen(false);
@@ -51,8 +34,14 @@ const handleBarcodeScan = async (barcode) => {
       if (product) {
         // Filter to show the found product
         setSearchTerm(barcode);
-// Show product details with action buttons
-        const productDetails = `📦 ${product.Name}\n💰 ₹${product.price_c?.toLocaleString('en-IN') || 'Price not set'}\n📊 Status: ${product.status_c || 'Available'}\n🏷️ Category: ${product.category_c || 'Uncategorized'}`;
+        
+        // Show product details with action buttons
+        const productDetails = `
+          📦 ${product.name}
+          💰 ₹${product.price?.toLocaleString() || 'Price not set'}
+          📊 Status: ${product.status || 'Available'}
+          🏷️ Category: ${product.category || 'Uncategorized'}
+        `;
         
         toast.success(
           <div>
@@ -60,11 +49,8 @@ const handleBarcodeScan = async (barcode) => {
             <div className="whitespace-pre-line text-sm">{productDetails}</div>
             <div className="mt-3 flex gap-2">
               <button 
-                onClick={() => {
-                  toast.dismiss();
-                  window.location.href = '/sales';
-                }}
-                className="bg-gold-500 text-white px-3 py-1 rounded text-sm hover:bg-gold-600 transition-colors"
+                onClick={() => window.location.href = '/sales'}
+                className="bg-gold-500 text-white px-3 py-1 rounded text-sm hover:bg-gold-600"
               >
                 Add to Sale
               </button>
@@ -72,7 +58,7 @@ const handleBarcodeScan = async (barcode) => {
           </div>, 
           {
             duration: 8000,
-            autoClose: false
+            onClick: () => window.location.href = '/sales'
           }
         );
       } else {
@@ -98,6 +84,21 @@ const loadProducts = async () => {
     }
   };
 
+const filterProducts = () => {
+    if (!searchTerm) {
+      setFilteredProducts(products);
+      return;
+    }
+
+    const filtered = products.filter(product =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.barcode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (product.diamondQuality && product.diamondQuality.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (product.certificateNumber && product.certificateNumber.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    setFilteredProducts(filtered);
+  };
 
   const handleAddProduct = async (productData) => {
     try {
@@ -112,9 +113,9 @@ const loadProducts = async () => {
 
   const handleEditProduct = async (productData) => {
     try {
-const updatedProduct = await productService.update(editProduct.Id, productData);
+      const updatedProduct = await productService.update(editProduct.Id, productData);
       setProducts(prev => 
-prev.map(p => p.Id === editProduct.Id ? updatedProduct : p)
+        prev.map(p => p.Id === editProduct.Id ? updatedProduct : p)
       );
       toast.success("Product updated successfully!");
     } catch (error) {
@@ -130,7 +131,7 @@ prev.map(p => p.Id === editProduct.Id ? updatedProduct : p)
 
     try {
       await productService.delete(productId);
-setProducts(prev => prev.filter(p => p.Id !== productId));
+      setProducts(prev => prev.filter(p => p.Id !== productId));
       toast.success("Product deleted successfully!");
     } catch (error) {
       toast.error("Failed to delete product");
@@ -159,50 +160,46 @@ setProducts(prev => prev.filter(p => p.Id !== productId));
   return (
 <div className="space-y-6">
       {/* Header */}
-<div className="flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Products</h1>
-            <p className="text-gray-600 mt-1 text-sm sm:text-base">
-              Manage your jewelry inventory with {products.length} total items
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-            <Button
-              onClick={() => setIsScannerOpen(true)}
-              variant="outline"
-              className="w-full sm:w-auto min-h-[44px]"
-            >
-              <ApperIcon name="Camera" className="w-4 h-4 mr-2" />
-              Scan Barcode
-            </Button>
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              className="w-full sm:w-auto min-h-[44px]"
-            >
-              <ApperIcon name="Plus" className="w-4 h-4 mr-2" />
-              Add Product
-            </Button>
-          </div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Products</h1>
+          <p className="text-gray-600 mt-1">
+            Manage your jewelry inventory with {products.length} total items
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button
+            onClick={() => setIsScannerOpen(true)}
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
+            <ApperIcon name="Camera" className="w-4 h-4 mr-2" />
+            Scan Barcode
+          </Button>
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full sm:w-auto"
+          >
+            <ApperIcon name="Plus" className="w-4 h-4 mr-2" />
+            Add Product
+          </Button>
         </div>
       </div>
 
       {/* Search and Filters */}
-<div className="flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <SearchBar
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by name, category, barcode..."
-              className="w-full"
-            />
-          </div>
-          <Button variant="outline" className="w-full sm:w-auto min-h-[44px]">
-            <ApperIcon name="Filter" className="w-4 h-4 mr-2" />
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <SearchBar
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by name, category, barcode, or SKU..."
+          />
+        </div>
+        <Button variant="outline" className="w-full sm:w-auto">
+          <ApperIcon name="Filter" className="w-4 h-4 mr-2" />
           Filters
         </Button>
-</div>
+      </div>
 
       {/* Products List */}
       {filteredProducts.length === 0 ? (
@@ -223,8 +220,7 @@ setProducts(prev => prev.filter(p => p.Id !== productId));
           onDelete={handleDeleteProduct}
         />
       )}
-
-      {/* Barcode Scanner */}
+{/* Barcode Scanner */}
       <BarcodeScanner
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
@@ -238,7 +234,6 @@ setProducts(prev => prev.filter(p => p.Id !== productId));
         onSubmit={editProduct ? handleEditProduct : handleAddProduct}
         editProduct={editProduct}
       />
-    </div>
     </div>
   );
 };

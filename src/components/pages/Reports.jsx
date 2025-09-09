@@ -35,30 +35,30 @@ const Reports = () => {
   ];
 
   return (
-<div className="space-y-6 sm:space-y-8">
+    <div className="space-y-8">
       {/* Page Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary-900 to-gold-600 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-900 to-gold-600 bg-clip-text text-transparent">
           Reports & Analytics
         </h1>
-        <p className="text-gray-600 mt-2 text-sm sm:text-base">
+        <p className="text-gray-600 mt-2">
           Generate comprehensive reports and gain insights into your jewelry business performance.
         </p>
       </motion.div>
 
       {/* Report Types Grid */}
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {reportTypes.map((report, index) => (
           <motion.div
             key={report.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-className={`bg-gradient-to-br ${report.bgColor} rounded-xl p-4 sm:p-8 border border-gray-100 hover:shadow-xl transition-all duration-300 cursor-pointer group`}
+            className={`bg-gradient-to-br ${report.bgColor} rounded-xl p-8 border border-gray-100 hover:shadow-xl transition-all duration-300 cursor-pointer group`}
           >
             <div className="flex items-start justify-between mb-4">
               <div className={`p-4 rounded-xl bg-gradient-to-r ${report.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
@@ -67,8 +67,8 @@ className={`bg-gradient-to-br ${report.bgColor} rounded-xl p-4 sm:p-8 border bor
               <ApperIcon name="ArrowUpRight" className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
             </div>
             
-<h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{report.title}</h3>
-            <p className="text-gray-700 mb-4 text-sm sm:text-base">{report.description}</p>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">{report.title}</h3>
+            <p className="text-gray-700 mb-4">{report.description}</p>
             
             <div className="flex items-center text-sm text-gray-600">
               <ApperIcon name="Clock" className="w-4 h-4 mr-2" />
@@ -83,13 +83,13 @@ className={`bg-gradient-to-br ${report.bgColor} rounded-xl p-4 sm:p-8 border bor
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
-className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg p-6 sm:p-12 text-center border border-gray-100"
+        className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg p-12 text-center border border-gray-100"
       >
         <div className="w-20 h-20 bg-gradient-to-r from-indigo-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
           <ApperIcon name="BarChart3" className="w-10 h-10 text-white" />
         </div>
         
-<h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
           Advanced Analytics Platform
         </h2>
         
@@ -98,7 +98,7 @@ className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg p-6 sm:p
           custom report builders, automated scheduling, and advanced data visualization tools.
         </p>
 
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
           {[
             {
               title: "Interactive Charts",

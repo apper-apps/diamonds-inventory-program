@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import { customerService } from "@/services/api/customerService";
-import { salesService } from "@/services/api/salesService";
 import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import SearchBar from "@/components/molecules/SearchBar";
+import CustomerModal from "@/components/organisms/CustomerModal";
+import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-import Loading from "@/components/ui/Loading";
-import SearchBar from "@/components/molecules/SearchBar";
-import Button from "@/components/atoms/Button";
-import CustomerModal from "@/components/organisms/CustomerModal";
+import { customerService } from "@/services/api/customerService";
+import { salesService } from "@/services/api/salesService";
 
 const Customers = () => {
   // State management
@@ -222,26 +222,24 @@ const Customers = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-className="flex flex-col gap-4"
+        className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary-900 to-gold-600 bg-clip-text text-transparent">
-              Customer Management
-            </h1>
-            <p className="text-gray-600 mt-2 text-sm sm:text-base">
-              Manage customer relationships and track purchase history
-            </p>
-          </div>
-          
-          <Button
-            onClick={handleAddCustomer}
-            className="flex items-center gap-2 w-full sm:w-auto min-h-[44px]"
-          >
-            <ApperIcon name="UserPlus" size={16} />
-            Add Customer
-          </Button>
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-900 to-gold-600 bg-clip-text text-transparent">
+            Customer Management
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Manage customer relationships and track purchase history
+          </p>
         </div>
+        
+        <Button
+          onClick={handleAddCustomer}
+          className="flex items-center gap-2"
+        >
+          <ApperIcon name="UserPlus" size={16} />
+          Add Customer
+        </Button>
       </motion.div>
 
       {/* Customer Stats */}
@@ -298,7 +296,7 @@ className="flex flex-col gap-4"
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-transition={{ duration: 0.5, delay: 0.4 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
         className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
       >
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
@@ -310,7 +308,7 @@ transition={{ duration: 0.5, delay: 0.4 }}
             />
           </div>
           
-<div className="flex flex-wrap gap-2">
+          <div className="flex gap-2">
             {[
               { value: "all", label: "All Customers" },
               { value: "recent", label: "New This Month" },
@@ -322,7 +320,6 @@ transition={{ duration: 0.5, delay: 0.4 }}
                 variant={selectedFilter === filter.value ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedFilter(filter.value)}
-                className="min-h-[36px] text-xs sm:text-sm"
               >
                 {filter.label}
               </Button>
@@ -351,7 +348,7 @@ transition={{ duration: 0.5, delay: 0.4 }}
               description={searchTerm ? "Try adjusting your search terms" : "Add your first customer to get started"}
             />
           ) : (
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               <AnimatePresence>
                 {filteredCustomers.map((customer, index) => {
                   const stats = getCustomerPurchaseStats(customer.Id);

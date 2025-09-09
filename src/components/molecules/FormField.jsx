@@ -62,14 +62,14 @@ const FormField = ({
   };
 
   return (
-<div className="space-y-2">
-      <Label htmlFor={name} className="text-sm sm:text-base">
+    <div className="space-y-1">
+      <Label htmlFor={name}>
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
       {renderInput()}
       {error && (
-        <p className="text-red-500 text-xs sm:text-sm mt-1 px-1">{error}</p>
+        <p className="text-red-500 text-sm mt-1">{error}</p>
       )}
     </div>
   );

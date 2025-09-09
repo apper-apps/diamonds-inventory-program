@@ -29,11 +29,11 @@ price: "0",
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-if (isOpen) {
+    if (isOpen) {
       loadCategories();
       if (editProduct) {
         setFormData({
-          name: editProduct.name || "",
+name: editProduct.name || "",
           category: editProduct.category || "",
           goldType: editProduct.goldType || "",
           diamondType: editProduct.diamondType || "",
@@ -48,7 +48,7 @@ if (isOpen) {
           description: editProduct.description || "",
           status: editProduct.status || "Available",
           barcode: editProduct.barcode || "",
-          images: Array.isArray(editProduct.images) ? editProduct.images : []
+          images: editProduct.images || []
         });
       } else {
 setFormData({
@@ -130,8 +130,7 @@ const productData = {
         weight: parseFloat(formData.weight) || 0,
         diamondWeight: parseFloat(formData.diamondWeight) || 0,
         price: parseFloat(formData.price) || 0,
-        barcode: formData.barcode || generateBarcode(),
-        images: Array.isArray(formData.images) ? formData.images : []
+        barcode: formData.barcode || generateBarcode()
       };
 
       await onSubmit(productData);
@@ -156,8 +155,8 @@ const productData = {
           className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
         >
           {/* Header */}
-<div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-            <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary-900 to-gold-600 bg-clip-text text-transparent">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-primary-900 to-gold-600 bg-clip-text text-transparent">
               {editProduct ? "Edit Product" : "Add New Product"}
             </h2>
             <button
@@ -169,7 +168,7 @@ const productData = {
           </div>
 
           {/* Form */}
-<form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <FormField
               label="Product Name"
               name="name"
@@ -191,7 +190,7 @@ const productData = {
               required
             />
 
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 label="Gold Type"
                 name="goldType"
@@ -228,7 +227,7 @@ const productData = {
                 error={errors.diamondType}
               />
             </div>
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <FormField
                 label="Diamond Quality"
                 id="diamondQuality"
@@ -276,7 +275,7 @@ options={[
             </div>
 
             {/* Weight Fields */}
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 label="Gold Weight (grams)"
                 id="weight"
@@ -328,15 +327,15 @@ options={[
                     });
                   }}
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-/>
-                {Array.isArray(formData.images) && formData.images.length > 0 && (
-                  <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4">
+                />
+                {formData.images.length > 0 && (
+                  <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
                     {formData.images.map((image, index) => (
                       <div key={index} className="relative">
                         <img 
                           src={image} 
                           alt={`Preview ${index + 1}`}
-                          className="w-full h-16 sm:h-20 object-cover rounded-lg"
+                          className="w-full h-20 object-cover rounded-lg"
                         />
                         <button
                           type="button"
@@ -346,7 +345,7 @@ options={[
                               images: prev.images.filter((_, i) => i !== index)
                             }));
                           }}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs hover:bg-red-600 touch-manipulation"
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
                         >
                           ×
                         </button>
@@ -375,7 +374,7 @@ options={[
               rows={3}
             />
 
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 <FormField
                 label="Price (₹)"
                 name="price"
@@ -425,19 +424,19 @@ options={[
             />
 
             {/* Actions */}
-<div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200 bg-gray-50 p-4 sm:p-6 -mx-4 sm:-mx-6">
+            <div className="flex space-x-3 pt-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={onClose}
-                className="flex-1 min-h-[44px]"
+                className="flex-1"
                 disabled={isSubmitting}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="flex-1 min-h-[44px]"
+                className="flex-1"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

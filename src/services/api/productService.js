@@ -1,4 +1,5 @@
-// Product service using ApperClient for database operations
+import React from "react";
+import Error from "@/components/ui/Error";
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Initialize ApperClient
@@ -48,7 +49,7 @@ export const productService = {
       }
       
       return response.data?.map(item => ({
-Id: item.Id,
+        Id: item.Id,
         name: item.Name || '',
         category: item.category_c || '',
         goldType: item.gold_type_c || '',
@@ -56,11 +57,11 @@ Id: item.Id,
         diamondQuality: item.diamond_quality_c || '',
         diamondColor: item.diamond_color_c || '',
         certificateNumber: item.certificate_number_c || '',
-        weight: parseFloat(item.weight_c) || 0,
-        diamondWeight: parseFloat(item.diamond_weight_c) || 0,
+        weight: item.weight_c || 0,
+        diamondWeight: item.diamond_weight_c || 0,
         dimensions: item.dimensions_c || '',
         specifications: item.specifications_c || '',
-        price: parseFloat(item.price_c) || 0,
+        price: item.price_c || 0,
         description: item.description_c || '',
         status: item.status_c || 'Available',
         barcode: item.barcode_c || '',
@@ -75,7 +76,7 @@ Id: item.Id,
     }
   },
 
-async getById(id) {
+  async getById(id) {
     try {
       await delay(200);
       const apperClient = getApperClient();
@@ -109,7 +110,7 @@ async getById(id) {
       
       const item = response.data;
       return {
-Id: item.Id,
+        Id: item.Id,
         name: item.Name || '',
         category: item.category_c || '',
         goldType: item.gold_type_c || '',
@@ -117,11 +118,11 @@ Id: item.Id,
         diamondQuality: item.diamond_quality_c || '',
         diamondColor: item.diamond_color_c || '',
         certificateNumber: item.certificate_number_c || '',
-        weight: parseFloat(item.weight_c) || 0,
-        diamondWeight: parseFloat(item.diamond_weight_c) || 0,
+        weight: item.weight_c || 0,
+        diamondWeight: item.diamond_weight_c || 0,
         dimensions: item.dimensions_c || '',
         specifications: item.specifications_c || '',
-        price: parseFloat(item.price_c) || 0,
+        price: item.price_c || 0,
         description: item.description_c || '',
         status: item.status_c || 'Available',
         barcode: item.barcode_c || '',
@@ -134,7 +135,7 @@ Id: item.Id,
     }
   },
 
-async getByBarcode(barcode) {
+  async getByBarcode(barcode) {
     try {
       await delay(200);
       const apperClient = getApperClient();
@@ -165,10 +166,10 @@ async getByBarcode(barcode) {
       
       const item = response.data[0];
       return {
-Id: item.Id,
+        Id: item.Id,
         name: item.Name || '',
         category: item.category_c || '',
-        price: parseFloat(item.price_c) || 0,
+        price: item.price_c || 0,
         status: item.status_c || 'Available',
         barcode: item.barcode_c || '',
         description: item.description_c || ''
@@ -180,7 +181,7 @@ Id: item.Id,
     }
   },
 
-async create(productData) {
+  async create(productData) {
     try {
       await delay(300);
       const apperClient = getApperClient();
@@ -203,7 +204,7 @@ async create(productData) {
             description_c: productData.description || '',
             status_c: productData.status || 'Available',
             barcode_c: productData.barcode || '',
-            images_c: Array.isArray(productData.images) ? productData.images.join(',') : (productData.images || ''),
+            images_c: productData.images || '',
             created_at_c: new Date().toISOString().split('T')[0]
           }
         ]
@@ -230,7 +231,7 @@ async create(productData) {
         if (successfulRecords.length > 0) {
           const item = successfulRecords[0].data;
           return {
-Id: item.Id,
+            Id: item.Id,
             name: item.Name || '',
             category: item.category_c || '',
             goldType: item.gold_type_c || '',
@@ -238,11 +239,11 @@ Id: item.Id,
             diamondQuality: item.diamond_quality_c || '',
             diamondColor: item.diamond_color_c || '',
             certificateNumber: item.certificate_number_c || '',
-            weight: parseFloat(item.weight_c) || 0,
-            diamondWeight: parseFloat(item.diamond_weight_c) || 0,
+            weight: item.weight_c || 0,
+            diamondWeight: item.diamond_weight_c || 0,
             dimensions: item.dimensions_c || '',
             specifications: item.specifications_c || '',
-            price: parseFloat(item.price_c) || 0,
+            price: item.price_c || 0,
             description: item.description_c || '',
             status: item.status_c || 'Available',
             barcode: item.barcode_c || '',
@@ -259,7 +260,7 @@ Id: item.Id,
     }
   },
 
-async update(id, productData) {
+  async update(id, productData) {
     try {
       await delay(300);
       const apperClient = getApperClient();
@@ -267,7 +268,7 @@ async update(id, productData) {
       const params = {
         records: [
           {
-Id: parseInt(id),
+            Id: parseInt(id),
             Name: productData.name || productData.Name,
             category_c: productData.category,
             gold_type_c: productData.goldType,
@@ -283,7 +284,7 @@ Id: parseInt(id),
             description_c: productData.description || '',
             status_c: productData.status || 'Available',
             barcode_c: productData.barcode || '',
-            images_c: Array.isArray(productData.images) ? productData.images.join(',') : (productData.images || '')
+            images_c: productData.images || ''
           }
         ]
       };
@@ -308,7 +309,7 @@ Id: parseInt(id),
         const successfulRecords = response.results.filter(result => result.success);
         if (successfulRecords.length > 0) {
           const item = successfulRecords[0].data;
-return {
+          return {
             Id: item.Id,
             name: item.Name || '',
             category: item.category_c || '',
@@ -317,11 +318,11 @@ return {
             diamondQuality: item.diamond_quality_c || '',
             diamondColor: item.diamond_color_c || '',
             certificateNumber: item.certificate_number_c || '',
-            weight: parseFloat(item.weight_c) || 0,
-            diamondWeight: parseFloat(item.diamond_weight_c) || 0,
+            weight: item.weight_c || 0,
+            diamondWeight: item.diamond_weight_c || 0,
             dimensions: item.dimensions_c || '',
             specifications: item.specifications_c || '',
-            price: parseFloat(item.price_c) || 0,
+            price: item.price_c || 0,
             description: item.description_c || '',
             status: item.status_c || 'Available',
             barcode: item.barcode_c || '',
@@ -338,13 +339,13 @@ return {
     }
   },
 
-async delete(id) {
+  async delete(id) {
     try {
       await delay(300);
       const apperClient = getApperClient();
       
       const params = {
-RecordIds: [parseInt(id)]
+        RecordIds: [parseInt(id)]
       };
       
       const response = await apperClient.deleteRecord('product_c', params);
@@ -371,7 +372,7 @@ RecordIds: [parseInt(id)]
       console.error("Error deleting product:", error?.response?.data?.message || error.message);
       throw error;
     }
-},
+  },
 
   async updateInventoryStatus(id, status) {
     return this.update(id, { status });
@@ -384,6 +385,6 @@ RecordIds: [parseInt(id)]
       success: true,
       message: "Price recalculation completed",
       updatedCount: 0
-    };
+};
   }
 };

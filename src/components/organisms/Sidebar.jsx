@@ -1,10 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
-import ApperIcon from "@/components/ApperIcon";
 import NavLink from "@/components/molecules/NavLink";
-import Inventory from "@/components/pages/Inventory";
+import ApperIcon from "@/components/ApperIcon";
 
-const Sidebar = ({ isOpen = false, onClose }) => {
+const Sidebar = ({ isOpen, onClose }) => {
 const navigation = [
     { name: "Dashboard", to: "/", icon: "LayoutDashboard" },
     { name: "Products", to: "/products", icon: "Package" },
@@ -64,10 +63,8 @@ const navigation = [
         initial={{ x: "-100%" }}
         animate={{ x: isOpen ? "0%" : "-100%" }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-className="lg:hidden fixed inset-0 z-50"
+        className="lg:hidden fixed left-0 top-0 w-80 bg-primary-900 h-full z-50 shadow-2xl"
       >
-        <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
-        <div className="relative w-80 bg-primary-900 h-full shadow-2xl overflow-y-auto">
         <div className="flex flex-col h-full">
           {/* Header with close button */}
           <div className="flex items-center justify-between px-6 py-6 border-b border-primary-800">
@@ -97,7 +94,6 @@ className="lg:hidden fixed inset-0 z-50"
             ))}
           </nav>
         </div>
-</div>
       </motion.div>
     </>
   );

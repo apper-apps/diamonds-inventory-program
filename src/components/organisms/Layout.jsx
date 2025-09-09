@@ -7,13 +7,13 @@ const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-<div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-<div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <Header onMenuToggle={() => setSidebarOpen(true)} />
         
-<main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <main className="flex-1 overflow-y-auto">
           <div className="p-4 sm:p-6">
             <Outlet />
           </div>

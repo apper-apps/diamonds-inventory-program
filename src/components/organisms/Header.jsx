@@ -5,7 +5,7 @@ import Button from "@/components/atoms/Button";
 
 const Header = ({ onMenuToggle }) => {
   const location = useLocation();
-  const navigate = useNavigate();
+const navigate = useNavigate();
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === "/") return "Dashboard";
@@ -34,9 +34,9 @@ const Header = ({ onMenuToggle }) => {
               4C Diamonds Inventory Management System
             </p>
           </div>
-</div>
+        </div>
 
-        <div className="flex items-center space-x-4">
+<div className="flex items-center space-x-4">
           <Button 
             variant="outline"
             size="sm" 
@@ -50,7 +50,7 @@ const Header = ({ onMenuToggle }) => {
           <Button variant="outline" size="sm" className="hidden sm:flex">
             <ApperIcon name="Bell" className="w-4 h-4 mr-2" />
             Notifications
-</Button>
+          </Button>
           
           <Button 
             variant="outline" 
@@ -61,8 +61,7 @@ const Header = ({ onMenuToggle }) => {
                 await ApperUI.logout();
                 navigate('/login');
               } catch (error) {
-                console.error('Logout failed:', error);
-                navigate('/login');
+                console.error("Logout failed:", error);
               }
             }}
             className="flex items-center"
@@ -75,8 +74,9 @@ const Header = ({ onMenuToggle }) => {
             <ApperIcon name="User" className="w-4 h-4 text-white" />
           </div>
         </div>
-</div>
-    </header>
+      </div>
+      
+</header>
   );
 };
 

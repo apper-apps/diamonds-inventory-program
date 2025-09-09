@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { dashboardService } from "@/services/api/dashboardService";
-import ApperIcon from "@/components/ApperIcon";
-import Error from "@/components/ui/Error";
-import Loading from "@/components/ui/Loading";
-import Icon from "@/components/ui/Icon";
 import StatCard from "@/components/molecules/StatCard";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import { dashboardService } from "@/services/api/dashboardService";
+import Icon from "@/components/ui/Icon";
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
@@ -57,7 +56,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Products"
-value={stats?.totalProducts?.toLocaleString('en-IN') || "0"}
+value={stats?.totalProducts?.toLocaleString() || "0"}
           icon="Package"
           subtitle="Items in inventory"
           gradient="from-blue-500 to-blue-600"
@@ -73,7 +72,7 @@ value={stats?.totalProducts?.toLocaleString('en-IN') || "0"}
         />
         <StatCard
           title="Low Stock Items"
-value={stats?.lowStockItems?.toLocaleString('en-IN') || "0"}
+          value={stats?.lowStockItems?.toString() || "0"}
           icon="AlertTriangle"
           subtitle="Need attention"
           gradient="from-orange-500 to-red-500"
@@ -82,7 +81,7 @@ value={stats?.lowStockItems?.toLocaleString('en-IN') || "0"}
         <StatCard
           title="Recent Sales"
           value={stats?.recentSales?.toString() || "0"}
-icon="TrendingUp"
+          icon="TrendingUp"
           subtitle="Last 7 days"
           gradient="from-gold-500 to-gold-600"
           delay={0.4}

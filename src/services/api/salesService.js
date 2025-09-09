@@ -1,9 +1,8 @@
-import { customerService } from "./customerService";
-import { productService } from "./productService";
+import { customerService } from './customerService';
+import { productService } from './productService';
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Initialize ApperClient
 // Initialize ApperClient
 const getApperClient = () => {
   const { ApperClient } = window.ApperSDK;
@@ -36,7 +35,7 @@ export const salesService = {
       const customer = await customerService.getById(saleData.customerId);
       
       // Generate invoice number
-      const invoiceNumber = `INV-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+      const invoiceNumber = `INV-${new Date().getFullYear()}-${Date.now().toString().padStart(4, '0')}`;
       const saleDate = new Date().toISOString();
       
       const params = {
@@ -51,7 +50,7 @@ export const salesService = {
             total_amount_c: parseFloat(saleData.totalAmount) || 0,
             sale_date_c: saleDate,
             status_c: 'completed',
-            payment_method_c: saleData.paymentMethod || 'cash',
+            payment_method_c: 'cash',
             created_at_c: saleDate,
             updated_at_c: saleDate
           }
@@ -86,9 +85,9 @@ export const salesService = {
             customerId: saleRecord.customer_id_c,
             customer: customer,
             items: saleData.items,
-            subtotal: parseFloat(saleRecord.subtotal_c) || 0,
-            gstAmount: parseFloat(saleRecord.gst_amount_c) || 0,
-            totalAmount: parseFloat(saleRecord.total_amount_c) || 0,
+            subtotal: saleRecord.subtotal_c,
+            gstAmount: saleRecord.gst_amount_c,
+            totalAmount: saleRecord.total_amount_c,
             saleDate: saleRecord.sale_date_c,
             status: saleRecord.status_c,
             paymentMethod: saleRecord.payment_method_c,
@@ -103,25 +102,14 @@ export const salesService = {
             // Add product details to items
             itemsWithDetails: await Promise.all(
               saleData.items.map(async (item) => {
-                try {
-                  const product = await productService.getById(item.productId);
-                  return {
-                    ...item,
-                    name: product.name,
-                    description: product.description,
-                    barcode: product.barcode,
-                    category: product.category
-                  };
-                } catch (error) {
-                  console.warn(`Failed to get product details for ID ${item.productId}:`, error);
-                  return {
-                    ...item,
-                    name: `Product #${item.productId}`,
-                    description: '',
-                    barcode: '',
-                    category: ''
-                  };
-                }
+                const product = await productService.getById(item.productId);
+                return {
+                  ...item,
+                  name: product.name,
+                  description: product.description,
+                  barcode: product.barcode,
+                  category: product.category
+                };
               })
             )
           };
@@ -136,7 +124,7 @@ export const salesService = {
       console.error('Error creating sale:', error?.response?.data?.message || error.message);
       throw new Error('Failed to create sale');
     }
-},
+  },
 
   async getAll() {
     try {
@@ -155,12 +143,6 @@ export const salesService = {
           { field: { Name: "sale_date_c" } },
           { field: { Name: "status_c" } },
           { field: { Name: "payment_method_c" } }
-        ],
-        orderBy: [
-          {
-            fieldName: "sale_date_c",
-            sorttype: "DESC"
-          }
         ]
       };
       
@@ -175,10 +157,10 @@ export const salesService = {
         Id: item.Id,
         invoiceNumber: item.invoice_number_c || '',
         customerId: item.customer_id_c?.Id || item.customer_id_c,
-        items: item.items_c ? (typeof item.items_c === 'string' ? JSON.parse(item.items_c) : item.items_c) : [],
-        subtotal: parseFloat(item.subtotal_c) || 0,
-        gstAmount: parseFloat(item.gst_amount_c) || 0,
-        totalAmount: parseFloat(item.total_amount_c) || 0,
+        items: item.items_c ? JSON.parse(item.items_c) : [],
+        subtotal: item.subtotal_c || 0,
+        gstAmount: item.gst_amount_c || 0,
+        totalAmount: item.total_amount_c || 0,
         saleDate: item.sale_date_c || '',
         status: item.status_c || '',
         paymentMethod: item.payment_method_c || ''
@@ -188,7 +170,7 @@ export const salesService = {
       console.error("Error fetching sales:", error?.response?.data?.message || error.message);
       return [];
     }
-},
+  },
 
   async getById(id) {
     try {
@@ -221,10 +203,10 @@ export const salesService = {
         Id: item.Id,
         invoiceNumber: item.invoice_number_c || '',
         customerId: item.customer_id_c?.Id || item.customer_id_c,
-        items: item.items_c ? (typeof item.items_c === 'string' ? JSON.parse(item.items_c) : item.items_c) : [],
-        subtotal: parseFloat(item.subtotal_c) || 0,
-        gstAmount: parseFloat(item.gst_amount_c) || 0,
-        totalAmount: parseFloat(item.total_amount_c) || 0,
+        items: item.items_c ? JSON.parse(item.items_c) : [],
+        subtotal: item.subtotal_c || 0,
+        gstAmount: item.gst_amount_c || 0,
+        totalAmount: item.total_amount_c || 0,
         saleDate: item.sale_date_c || '',
         status: item.status_c || '',
         paymentMethod: item.payment_method_c || ''
@@ -234,15 +216,11 @@ export const salesService = {
       console.error("Error fetching sale:", error?.response?.data?.message || error.message);
       throw error;
     }
-},
+  },
 
   async getByInvoiceNumber(invoiceNumber) {
     try {
       await delay(200);
-      if (!invoiceNumber?.trim()) {
-        return null;
-      }
-      
       const apperClient = getApperClient();
       
       const params = {
@@ -279,7 +257,7 @@ export const salesService = {
     }
   },
 
-async getCustomerSales(customerId) {
+  async getSalesByCustomer(customerId) {
     try {
       await delay(300);
       const apperClient = getApperClient();
@@ -296,12 +274,6 @@ async getCustomerSales(customerId) {
             Operator: "EqualTo",
             Values: [parseInt(customerId)]
           }
-        ],
-        orderBy: [
-          {
-            fieldName: "sale_date_c",
-            sorttype: "DESC"
-          }
         ]
       };
       
@@ -314,7 +286,7 @@ async getCustomerSales(customerId) {
       
       return response.data?.map(item => ({
         Id: item.Id,
-        totalAmount: parseFloat(item.total_amount_c) || 0,
+        totalAmount: item.total_amount_c || 0,
         saleDate: item.sale_date_c || ''
       })) || [];
       
@@ -322,7 +294,7 @@ async getCustomerSales(customerId) {
       console.error("Error fetching customer sales:", error?.response?.data?.message || error.message);
       return [];
     }
-},
+  },
 
   async getSalesStats() {
     try {
@@ -358,7 +330,7 @@ async getCustomerSales(customerId) {
         const saleDateStart = new Date(saleDate.getFullYear(), saleDate.getMonth(), saleDate.getDate());
         return saleDateStart.getTime() === todayStart.getTime();
       });
-      const todayTotal = todaySales.reduce((sum, sale) => sum + (parseFloat(sale.total_amount_c) || 0), 0);
+      const todayTotal = todaySales.reduce((sum, sale) => sum + (sale.total_amount_c || 0), 0);
       
       // This week's sales
       const weekStart = new Date(today);
@@ -369,7 +341,7 @@ async getCustomerSales(customerId) {
         const saleDate = new Date(sale.sale_date_c);
         return saleDate >= weekStart;
       });
-      const weekTotal = weekSales.reduce((sum, sale) => sum + (parseFloat(sale.total_amount_c) || 0), 0);
+      const weekTotal = weekSales.reduce((sum, sale) => sum + (sale.total_amount_c || 0), 0);
       
       // This month's sales
       const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -377,7 +349,7 @@ async getCustomerSales(customerId) {
         const saleDate = new Date(sale.sale_date_c);
         return saleDate >= monthStart;
       });
-      const monthTotal = monthSales.reduce((sum, sale) => sum + (parseFloat(sale.total_amount_c) || 0), 0);
+      const monthTotal = monthSales.reduce((sum, sale) => sum + (sale.total_amount_c || 0), 0);
       
       return {
         today: {
@@ -394,7 +366,7 @@ async getCustomerSales(customerId) {
         },
         total: {
           count: sales.length,
-          total: sales.reduce((sum, sale) => sum + (parseFloat(sale.total_amount_c) || 0), 0)
+          total: sales.reduce((sum, sale) => sum + (sale.total_amount_c || 0), 0)
         }
       };
       
