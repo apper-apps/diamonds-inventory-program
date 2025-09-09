@@ -238,7 +238,7 @@ return (
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Products Section */
+{/* Products Section */}
         <div className="lg:col-span-2 space-y-4">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
             <div className="p-6 border-b border-gray-100">
@@ -287,7 +287,7 @@ Add
           </div>
         </div>
 
-        {/* Cart & Customer Section */}
+{/* Cart & Customer Section */}
         <div className="space-y-6">
           {/* Customer Selection */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
