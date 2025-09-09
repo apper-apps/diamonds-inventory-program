@@ -90,12 +90,12 @@ const filterProducts = () => {
       return;
     }
 
-    const filtered = products.filter(product =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.barcode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.diamondQuality && product.diamondQuality.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (product.certificateNumber && product.certificateNumber.toLowerCase().includes(searchTerm.toLowerCase()))
+const filtered = products.filter(product =>
+      product.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category_c.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.barcode_c.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (product.diamond_quality_c && product.diamond_quality_c.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (product.certificate_number_c && product.certificate_number_c.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     setFilteredProducts(filtered);
   };

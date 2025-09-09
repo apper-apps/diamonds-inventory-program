@@ -45,38 +45,38 @@ key={product.Id}
                     className="border-b border-gray-100 hover:bg-gradient-to-r hover:from-gray-50 hover:to-transparent transition-all duration-200">
                     <td className="py-4 px-6">
                         <div>
-                            <div className="font-semibold text-gray-900">{product.name}</div>
+<div className="font-semibold text-gray-900">{product.Name}</div>
                             <div className="text-sm text-gray-600 mt-1 line-clamp-2">
-                                {product.description}
+                                {product.description_c}
                             </div>
                         </div>
                     </td>
                     <td className="py-4 px-6">
                         <span
                             className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                            {product.category}
+                            {product.category_c}
                         </span>
                     </td>
-<td className="py-4 px-6">
+                    <td className="py-4 px-6">
                         <div
                             className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg px-3 py-2 inline-block">
-                            <span className="font-mono text-sm font-bold text-gray-800">{product.barcode}</span>
+                            <span className="font-mono text-sm font-bold text-gray-800">{product.barcode_c}</span>
                         </div>
                     </td>
                     <td className="py-4 px-6">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {product.diamondQuality || 'N/A'}
+                            {product.diamond_quality_c || 'N/A'}
                         </span>
-                        {product.certificateNumber && (
+                        {product.certificate_number_c && (
                             <div className="text-xs text-gray-500 mt-1">
-                                {product.certificateNumber}
+                                {product.certificate_number_c}
                             </div>
                         )}
                     </td>
                     <td className="py-4 px-6">
                         <span
                             className="font-bold text-lg bg-gradient-to-r from-gold-600 to-gold-800 bg-clip-text text-transparent">
-                            {formatPrice(product.price)}
+                            {formatPrice(product.price_c)}
                         </span>
                     </td>
                     <td className="py-4 px-6">
