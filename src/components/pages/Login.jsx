@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Button from "@/components/atoms/Button";
 import FormField from "@/components/molecules/FormField";
 import ApperIcon from "@/components/ApperIcon";
 import { authService } from "@/services/api/authService";
+import { useContext } from 'react';
+import { AuthContext } from '../../App';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { isInitialized } = useContext(AuthContext);
+
   const [formData, setFormData] = useState({
     username: "",
     password: ""
@@ -22,6 +26,14 @@ const Login = () => {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    if (isInitialized) {
+      // Show login UI in this component
+      const { ApperUI } = window.ApperSDK;
+      ApperUI.showLogin("#authentication");
+    }
+  }, [isInitialized]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -32,24 +44,24 @@ const Login = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.username.trim()) {
       newErrors.username = "Username is required";
     }
-    
+
     if (!formData.password) {
       newErrors.password = "Password is required";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     try {
       setLoading(true);
       const user = await authService.login(formData.username, formData.password);
@@ -81,7 +93,16 @@ const Login = () => {
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+        <div id="authentication" className="bg-white rounded-xl shadow-lg border border-gray-200 p-8"></div>
+        <div className="text-center mt-4">
+          <p className="text-sm text-surface-600 dark:text-surface-400">
+            Don't have an account?{' '}
+            <Link to="/signup" className="font-medium text-primary hover:text-primary-dark">
+              Sign up
+            </Link>
+          </p>
+        </div>
+        {/*<div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <FormField
               label="Username"
@@ -125,10 +146,10 @@ const Login = () => {
               )}
             </Button>
           </form>
-        </div>
+        </div> */}
 
         {/* Demo Credentials */}
-        <div className="mt-6 bg-white rounded-lg border border-gray-200 p-4">
+        {/* <div className="mt-6 bg-white rounded-lg border border-gray-200 p-4">
           <h3 className="text-sm font-medium text-gray-900 mb-3">Demo Credentials</h3>
           <div className="space-y-2 text-xs text-gray-600">
             <div className="flex justify-between">
@@ -144,7 +165,7 @@ const Login = () => {
               <span className="font-mono">staff1 / staff123</span>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-gray-500">
