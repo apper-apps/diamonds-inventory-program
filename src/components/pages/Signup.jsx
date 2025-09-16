@@ -1,16 +1,16 @@
-import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { useContext } from 'react';
-import { AuthContext } from '../../App';
+import React, { useContext, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AuthContext } from "../../App";
 import ApperIcon from "@/components/ApperIcon";
+import Inventory from "@/components/pages/Inventory";
 
 function Signup() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isInitialized } = useContext(AuthContext);
 
-  useEffect(() => {
+useEffect(() => {
     if (isInitialized) {
       // Show signup UI in this component
       const { ApperUI } = window.ApperSDK;
@@ -19,38 +19,33 @@ function Signup() {
   }, [isInitialized]);
 
   return (
-
-    <div className="min-h-screen bg-gradient-to-br from-gold-50 to-gold-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo and Branding */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <div className="p-3 bg-gold-500 rounded-xl">
-              <ApperIcon name="Gem" size={32} className="text-white" />
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md space-y-8 p-8">
+        <div className="flex flex-col gap-6 items-center justify-center">
+          <div className="w-14 h-14 shrink-0 rounded-xl flex items-center justify-center bg-gradient-to-r from-primary-500 to-primary-600 text-white text-2xl 2xl:text-3xl font-bold">
+            4C
+          </div>
+          <div className="flex flex-col gap-1 items-center justify-center">
+            <div className="text-center text-lg xl:text-xl font-bold">
+              Create Account
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">4C Diamonds</h1>
-              <p className="text-sm text-gray-600">Inventory Management System</p>
+            <div className="text-center text-sm text-gray-500">
+              Please create an account to continue
             </div>
           </div>
-          <p className="text-gray-600">Sign up to access your dashboard</p>
         </div>
-
-        {/* Login Form */}
-        <div id="authentication" className="bg-white rounded-xl shadow-lg border border-gray-200 p-8"></div>
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+          <div id="authentication" />
+        </div>
         <div className="text-center mt-4">
-          <p className="text-sm text-surface-600 dark:text-surface-400">
+          <p className="text-sm text-gray-600">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-primary hover:text-primary-dark">
+            <Link to="/login" className="font-medium text-primary-500 hover:text-primary-600">
               Sign in
             </Link>
           </p>
         </div>
-        {/* Footer */}
-        <div className="text-center mt-8 text-sm text-gray-500">
-          <p>&copy; 2024 4C Diamonds. All rights reserved.</p>
-        </div>
-      </div>
+</div>
     </div>
   );
 }

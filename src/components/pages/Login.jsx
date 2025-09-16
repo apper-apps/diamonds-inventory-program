@@ -102,51 +102,9 @@ const Login = () => {
             </Link>
           </p>
         </div>
-        {/*<div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <FormField
-              label="Username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="Enter your username"
-              error={errors.username}
-              required
-              autoComplete="username"
-            />
-
-            <FormField
-              label="Password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              error={errors.password}
-              required
-              autoComplete="current-password"
-            />
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-              size="lg"
-            >
-              {loading ? (
-                <>
-                  <ApperIcon name="Loader" size={16} className="animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                <>
-                  <ApperIcon name="LogIn" size={16} />
-                  Sign In
-                </>
-              )}
-            </Button>
-          </form>
-        </div> */}
+<div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+          <div id="authentication" />
+        </div>
 
         {/* Demo Credentials */}
         {/* <div className="mt-6 bg-white rounded-lg border border-gray-200 p-4">
