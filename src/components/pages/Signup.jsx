@@ -44,8 +44,8 @@ useEffect(() => {
               Sign in
             </Link>
           </p>
-        </div>
 </div>
+      </div>
     </div>
   );
 }

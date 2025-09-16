@@ -91,9 +91,11 @@ const Login = () => {
           </div>
           <p className="text-gray-600">Sign in to access your dashboard</p>
         </div>
-
-        {/* Login Form */}
-        <div id="authentication" className="bg-white rounded-xl shadow-lg border border-gray-200 p-8"></div>
+{/* Login Form */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+          <div id="authentication" />
+        </div>
+        
         <div className="text-center mt-4">
           <p className="text-sm text-surface-600 dark:text-surface-400">
             Don't have an account?{' '}
@@ -102,10 +104,6 @@ const Login = () => {
             </Link>
           </p>
         </div>
-<div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-          <div id="authentication" />
-        </div>
-
         {/* Demo Credentials */}
         {/* <div className="mt-6 bg-white rounded-lg border border-gray-200 p-4">
           <h3 className="text-sm font-medium text-gray-900 mb-3">Demo Credentials</h3>
