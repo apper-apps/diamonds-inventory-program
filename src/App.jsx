@@ -13,7 +13,7 @@ import Login from "@/components/pages/Login";
 import Reports from "@/components/pages/Reports";
 import BarcodeSearch from "@/components/pages/BarcodeSearch";
 import Products from "@/components/pages/Products";
-import Layout from "@/components/Layout";
+import Layout from "@/components/organisms/Layout";
 import PromptPassword from "@/components/pages/PromptPassword";
 import ResetPassword from "@/components/pages/ResetPassword";
 import Inventory from "@/components/pages/Inventory";
