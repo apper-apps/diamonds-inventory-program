@@ -1,6 +1,5 @@
-// Auth service now uses Apper SDK for authentication
-// This service provides compatibility methods for existing code
-
+// Authentication service using localStorage
+// Primary authentication mechanism for the application
 const authService = {
   // Check if user is authenticated
   isAuthenticated() {
